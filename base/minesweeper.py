@@ -1,7 +1,9 @@
 """Base game for minesweeper."""
 
 import random
+import copy
 from string import ascii_lowercase
+
 
 class Game:
     """Class containing a playable Minesweeper game."""
@@ -15,30 +17,40 @@ class Game:
     def open(self, y, x):
         """Open a field.
 
-        Returns True if the move is accepted."""
+        :rtype: True if move is accepted
+        :param y: y coordinate
+        :param x: x coordinate
+        """
         if self._valid_position(y, x):
             self._open_overlay(y, x)
         else:
-            raise Exception("({},{}) is not a valid position.".format(y,x))
+            raise Exception("({},{}) is not a valid position.".format(y, x))
 
     def flag(self, y, x):
-        """Flag a field.
+        """Flag or remove a flag from a field.
 
-        Returns True if the move is accepted.note"""
+        :rtype: True if flag can be set or removed.
+        :param y: y coordinate
+        :param x: x coordinate
+        """
         if self._valid_position(y, x):
             if self._overlay[y][x] == '.':
                 self._overlay[y][x] = 'F'
             elif self._overlay[y][x] == 'F':
                 self._overlay[y][x] = '.'
         else:
-            raise Exception("({},{}) is not a valid position.".format(y,x))
+            raise Exception("({},{}) is not a valid position.".format(y, x))
 
     def won(self):
         """Return -1, 0 or 1 if the game is lost, undecided or won."""
-        # flatten = lambda l: [item for sublist in l for item in sublist]
-        fields = [field for row in self._overlay for field in row]
+        overlay = copy.deepcopy(self._overlay)
+        for mine in self._mines:
+            overlay[mine[0]][mine[1]] = 'f'  # Found mines
+        fields = [field for row in overlay for field in row]
         if any(field == 'X' for field in fields):
             return -1
+        elif any(field == 'F' for field in fields):  # Check that only mines are flagged
+            return 0
         elif all(field != '.' for field in fields):
             return 1
         else:
@@ -48,10 +60,10 @@ class Game:
         """Create minefield with random mine distribution.
 
         First dimension is y and second dimension is x."""
-        self._field = [['0' for y in range(size_y)] for x in range(size_x)]
-        self._overlay = [['.' for y in range(size_y)] for x in range(size_x)]
+        self._field = [['0' for _ in range(size_y)] for _ in range(size_x)]
+        self._overlay = [['.' for _ in range(size_y)] for _ in range(size_x)]
 
-        possible_fields = [ (y,x) for y in range(size_y) for x in range(size_x) ]
+        possible_fields = [(y, x) for y in range(size_y) for x in range(size_x)]
         self._mines = random.sample(possible_fields, mine_count)
         for mine in self._mines:
             self._add_mine(mine)
@@ -62,7 +74,7 @@ class Game:
         x = mine[1]
         self._field[y][x] = 'X'
         for ny, nx in self._neighbours(y, x):
-            if (self._field[ny][nx] != 'X'):
+            if self._field[ny][nx] != 'X':
                 self._field[ny][nx] = str(int(self._field[ny][nx]) + 1)
 
     def _neighbours(self, y, x):
@@ -86,7 +98,7 @@ class Game:
         if self._overlay[y][x] == '.':
             self._overlay[y][x] = self._field[y][x]
             if self._overlay[y][x] == '0':
-                [self._open_overlay(ny, nx) for ny,nx in self._neighbours(y,x)]
+                [self._open_overlay(ny, nx) for ny, nx in self._neighbours(y, x)]
 
     def show_field(self):
         # Print top row containing labels
