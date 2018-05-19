@@ -1,12 +1,18 @@
 """Base game for minesweeper."""
 
 import random
-import copy
 from string import ascii_lowercase
+
+import numpy as np
 
 
 class Game:
     """Class containing a playable Minesweeper game."""
+
+    _UNOPENED = -3
+    _MINE = -1
+    _FLAG = -2
+    _OPENED = 0
 
     def __init__(self, size_y, size_x, mine_count):
         self._size_y = size_y
@@ -34,24 +40,23 @@ class Game:
         :param x: x coordinate
         """
         if self._valid_position(y, x):
-            if self._overlay[y][x] == '.':
-                self._overlay[y][x] = 'F'
-            elif self._overlay[y][x] == 'F':
-                self._overlay[y][x] = '.'
+            if self._overlay[y, x] == self._UNOPENED:
+                self._overlay[y, x] = self._FLAG
+            elif self._overlay[y, x] == self._FLAG:
+                self._overlay[y, x] = self._UNOPENED
         else:
             raise Exception("({},{}) is not a valid position.".format(y, x))
 
     def won(self):
         """Return -1, 0 or 1 if the game is lost, undecided or won."""
-        overlay = copy.deepcopy(self._overlay)
+        overlay = np.copy(self._overlay)
         for mine in self._mines:
-            overlay[mine[0]][mine[1]] = 'f'  # Found mines
-        fields = [field for row in overlay for field in row]
-        if any(field == 'X' for field in fields):
+            overlay[mine[0], mine[1]] = self._OPENED  # Open found mines
+        if np.any(overlay == self._MINE):
             return -1
-        elif any(field == 'F' for field in fields):  # Check that only mines are flagged
+        elif np.any(overlay == self._FLAG):  # Check that only mines are flagged
             return 0
-        elif all(field != '.' for field in fields):
+        elif np.all(overlay != self._UNOPENED):
             return 1
         else:
             return 0
@@ -60,22 +65,40 @@ class Game:
         """Create minefield with random mine distribution.
 
         First dimension is y and second dimension is x."""
-        self._field = [['0' for _ in range(size_y)] for _ in range(size_x)]
-        self._overlay = [['.' for _ in range(size_y)] for _ in range(size_x)]
+        self._field = np.zeros((size_y, size_x), np.int8)
+        self._overlay = np.zeros((size_y, size_x), np.int8) + self._UNOPENED
 
         possible_fields = [(y, x) for y in range(size_y) for x in range(size_x)]
         self._mines = random.sample(possible_fields, mine_count)
-        for mine in self._mines:
-            self._add_mine(mine)
 
-    def _add_mine(self, mine):
-        """Add mine to field and set surrounding values."""
+        # Set up values to define near mines
+        for mine in self._mines:
+            self._set_field_around_mine(mine)
+
+        # Set mines into field
+        for mine in self._mines:
+            self._field[mine[0], mine[1]] = self._MINE
+
+    def _set_field_around_mine(self, mine):
+        """Set surrounding values around mine."""
         y = mine[0]
         x = mine[1]
-        self._field[y][x] = 'X'
-        for ny, nx in self._neighbours(y, x):
-            if self._field[ny][nx] != 'X':
-                self._field[ny][nx] = str(int(self._field[ny][nx]) + 1)
+        y_from = y-1 if y > 0 else 0
+        y_to = y+2
+        x_from = x-1 if x > 0 else 0
+        x_to = x+2
+        self._field[y_from:y_to, x_from:x_to] += 1
+
+    def _valid_position(self, y, x):
+        """Check if passed position is still on the board."""
+        return (y >= 0) and (y < self._size_y) and (x >= 0) and (x < self._size_x)
+
+    def _open_overlay(self, y, x):
+        """Open overlay around the opened position."""
+        if self._overlay[y, x] == self._UNOPENED:
+            self._overlay[y, x] = self._field[y, x]
+            if self._overlay[y, x] == 0:
+                [self._open_overlay(ny, nx) for ny, nx in self._neighbours(y, x)]
 
     def _neighbours(self, y, x):
         """Get neighbours of given position."""
@@ -89,19 +112,9 @@ class Game:
                         neighbours.append((y+dy, x+dx))
         return neighbours
 
-    def _valid_position(self, y, x):
-        """Check if passed position is still on the board."""
-        return (y >= 0) and (y < self._size_y) and (x >= 0) and (x < self._size_x)
-
-    def _open_overlay(self, y, x):
-        """Open overlay around the opened position."""
-        if self._overlay[y][x] == '.':
-            self._overlay[y][x] = self._field[y][x]
-            if self._overlay[y][x] == '0':
-                [self._open_overlay(ny, nx) for ny, nx in self._neighbours(y, x)]
-
     def show_field(self):
+        field = np.array2string(self._overlay, sign=' ')
         # Print top row containing labels
-        print('  ' + ' '.join(self._top_labels))
-        for label, row in zip(ascii_lowercase[:self._size_y], self._overlay):
-            print(label + ' ' + ' '.join(row))
+        print('     ' + '  '.join(self._top_labels))
+        for label, row in zip(ascii_lowercase[:self._size_y], field.splitlines()):
+            print(label + ' ' + row)

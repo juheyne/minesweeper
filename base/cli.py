@@ -13,6 +13,7 @@ if __name__ == '__main__':
     print('Minesweper ({},{}) with {} mines.'.format(size_y, size_x, mines))
     print('Input your moves in row column format, e.g. a 4.')
     print('If you want to add a flag, add f after the position, e.g. b 6 f.')
+    print('Flags are {} and unopened fields are {}.'.format(Game._FLAG, Game._UNOPENED))
 
     while game.won() == 0:
         game.show_field()
