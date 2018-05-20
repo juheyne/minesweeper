@@ -20,6 +20,47 @@ class Game:
         self._create_minefield(size_x, size_y, mine_count)
         self._top_labels = [str(label) for label in list(range(size_x))]
 
+    def action(self, y, x, flag):
+        """Take an action by either flagging or selecting a field.
+
+        Return the reward.
+        :rtype: (new_state, reward, done)
+        :param y: y coordinate
+        :param x: x coordinate
+        :param flag: True if action is flag/remove flag
+        """
+        if not self._valid_position(y, x):
+            raise Exception("({},{}) is not a valid position.".format(y, x))
+
+        penalty_useless_action = -1
+        if flag:
+            if self._overlay[y, x] == self._UNOPENED:
+                self._overlay[y, x] = self._FLAG
+                reward = 0
+            elif self._overlay[y, x] == self._FLAG:
+                self._overlay[y, x] = self._UNOPENED
+                reward = 0
+            else:  # Try to flag an already open area
+                reward = penalty_useless_action
+        else:
+            if self._overlay[y, x] == self._UNOPENED:
+                self._open_overlay(y, x)
+                reward = 0
+            else:  # Try to open an already open area
+                reward = penalty_useless_action
+
+        won = self.won()
+        if won == 0:
+            done = False
+        elif won == 1:
+            reward += 10
+            done = True
+        else:
+            reward -= 10
+            done = True
+
+        return self.state(), reward, done
+
     def open(self, y, x):
         """Open a field.
 
@@ -46,6 +87,10 @@ class Game:
                 self._overlay[y, x] = self._UNOPENED
         else:
             raise Exception("({},{}) is not a valid position.".format(y, x))
+
+    def state(self):
+        """Return current state of the game."""
+        return np.copy(self._overlay)
 
     def won(self):
         """Return -1, 0 or 1 if the game is lost, undecided or won."""
