@@ -24,6 +24,7 @@ class QNetwork:
 
         # Take output of convolution and create fully connected layer, if understood correctly
         self.stream = slim.flatten(self.conv2)
+        # self.stream = slim.flatten(self.input)  # Test for directly learning on the input
         xavier_init = tf.contrib.layers.xavier_initializer()
         # First dimension is batch_size
         self.W = tf.Variable(xavier_init([self.stream.get_shape().as_list()[1], num_actions]))

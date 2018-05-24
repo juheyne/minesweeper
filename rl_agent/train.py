@@ -9,7 +9,7 @@ sys.path.append('../base/')
 from minesweeper import Game
 
 # Game parameters
-field_size = 4
+field_size = 5
 num_actions = field_size*field_size*2
 mines = 1
 
@@ -19,8 +19,8 @@ update_freq = 4  # How often to perform a training step.
 y = .99  # Discount factor on the target Q-values
 startE = 1  # Starting chance of random action
 endE = 0.1  # Final chance of random action
-annealing_steps = 100000.  # How many steps of training to reduce startE to endE.
-num_episodes = 10000  # How many episodes of game environment to train network with.
+annealing_steps = 10000.  # How many steps of training to reduce startE to endE.
+num_episodes = 100000  # How many episodes of game environment to train network with.
 pre_train_steps = 10000  # How many steps of random actions before training begins.
 max_epLength = 200  # The max allowed length of our episode.
 load_model = False  # Whether to load a saved model.
@@ -70,13 +70,14 @@ with tf.Session() as sess:
         j = 0
         actions = []
         # The Q-Network
-        while j < max_epLength:  # If the network takes more moves than needed for the field, cancel episode
+        while j < max_epLength and rAll > -100:  # If the network takes more moves than needed for the field, cancel episode
             j += 1
             # Choose an action by greedily (with e chance of random action) from the Q-network
             if np.random.rand(1) < e or total_steps < pre_train_steps:
                 a = np.random.randint(0, num_actions)
             else:
                 a = sess.run(mainQN.predict, feed_dict={mainQN.input: np.reshape(s, [-1, field_size, field_size, 1])})[0]
+            original_action = a
             if a >= num_actions//2:
                 a -= num_actions//2
                 flag = True
@@ -85,7 +86,7 @@ with tf.Session() as sess:
             y, x = np.unravel_index(a, (field_size, field_size))
             s1, r, d = game.action(y, x, flag)
             total_steps += 1
-            episodeBuffer.add(np.reshape(np.array([s, a, r, s1, d]), [1, 5]))  # Save experience to episode buffer.
+            episodeBuffer.add(np.reshape(np.array([s, original_action, r, s1, d]), [1, 5]))  # Save experience to episode buffer.
 
             if total_steps > pre_train_steps:
                 if e > endE:
@@ -101,7 +102,7 @@ with tf.Session() as sess:
                     targetQ = trainBatch[:, 2] + (y*doubleQ * end_multiplier)
                     # Update the network with our target values.
                     _ = sess.run(mainQN.updateModel,
-                                 feed_dict={mainQN.input: np.reshape(np.stack(trainBatch[:, 3]), [-1, field_size, field_size, 1]),
+                                 feed_dict={mainQN.input: np.reshape(np.stack(trainBatch[:, 0]), [-1, field_size, field_size, 1]),
                                             mainQN.targetQ: targetQ,
                                             mainQN.actions: trainBatch[:, 1]})
 
@@ -122,6 +123,7 @@ with tf.Session() as sess:
             game.show_field()
             print('Actions:')
             print(actions)
+            print('Reward for this game: {}'.format(rAll))
         # Periodically save the model.
         if i % 1000 == 0:
             saver.save(sess, path+'/model-'+str(i)+'.ckpt')
@@ -129,4 +131,4 @@ with tf.Session() as sess:
         if len(rList) % 10 == 0:
             print(total_steps, np.mean(rList[-10:]), e)
     saver.save(sess, path+'/model-'+str(i)+'.ckpt')
-print("Percent of successful episodes: " + str(sum(rList)/num_episodes) + "%")
+print("Average reward per episodes: " + str(sum(rList)/num_episodes))

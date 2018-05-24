@@ -32,20 +32,20 @@ class Game:
         if not self._valid_position(y, x):
             raise Exception("({},{}) is not a valid position.".format(y, x))
 
-        penalty_useless_action = -1
+        penalty_useless_action = -2
         if flag:
             if self._overlay[y, x] == self._UNOPENED:
                 self._overlay[y, x] = self._FLAG
-                reward = 0
+                reward = 1
             elif self._overlay[y, x] == self._FLAG:
                 self._overlay[y, x] = self._UNOPENED
-                reward = 0
+                reward = -1
             else:  # Try to flag an already open area
                 reward = penalty_useless_action
         else:
             if self._overlay[y, x] == self._UNOPENED:
                 self._open_overlay(y, x)
-                reward = 0
+                reward = 1
             else:  # Try to open an already open area
                 reward = penalty_useless_action
 
@@ -53,10 +53,10 @@ class Game:
         if won == 0:
             done = False
         elif won == 1:
-            reward += 10
+            reward = 100
             done = True
         else:
-            reward -= 10
+            reward = -100
             done = True
 
         return self.state(), reward, done
@@ -96,7 +96,8 @@ class Game:
         """Return -1, 0 or 1 if the game is lost, undecided or won."""
         overlay = np.copy(self._overlay)
         for mine in self._mines:
-            overlay[mine[0], mine[1]] = self._OPENED  # Open found mines
+            if overlay[mine[0], mine[1]] == self._FLAG:  # Remove flag from found mines
+                overlay[mine[0], mine[1]] = self._OPENED
         if np.any(overlay == self._MINE):
             return -1
         elif np.any(overlay == self._FLAG):  # Check that only mines are flagged
@@ -114,7 +115,9 @@ class Game:
         self._overlay = np.zeros((size_y, size_x), np.int8) + self._UNOPENED
 
         possible_fields = [(y, x) for y in range(size_y) for x in range(size_x)]
-        self._mines = random.sample(possible_fields, mine_count)
+        # self._mines = random.sample(possible_fields, mine_count)
+
+        self._mines = [(2, 2)]
 
         # Set up values to define near mines
         for mine in self._mines:
