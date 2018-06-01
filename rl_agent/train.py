@@ -19,13 +19,13 @@ update_freq = 4  # How often to perform a training step.
 y = .99  # Discount factor on the target Q-values
 startE = 1  # Starting chance of random action
 endE = 0.1  # Final chance of random action
-annealing_steps = 10000.  # How many steps of training to reduce startE to endE.
+annealing_steps = 100000.  # How many steps of training to reduce startE to endE.
 num_episodes = 100000  # How many episodes of game environment to train network with.
 pre_train_steps = 10000  # How many steps of random actions before training begins.
 max_epLength = 200  # The max allowed length of our episode.
 load_model = False  # Whether to load a saved model.
 path = "../dqn"  # The path to save our model to.
-tau = 0.001  # Rate to update target network toward primary network
+tau = 0.0001  # Rate to update target network toward primary network
 
 # Start training
 tf.reset_default_graph()
@@ -106,7 +106,7 @@ with tf.Session() as sess:
                                             mainQN.targetQ: targetQ,
                                             mainQN.actions: trainBatch[:, 1]})
 
-                    qnetwork.update_target(targetOps,sess)  # Update the target network toward the primary network.
+                    qnetwork.update_target(targetOps, sess)  # Update the target network toward the primary network.
             rAll += r
             s = s1
             actions.append((y, x, flag))

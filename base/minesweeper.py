@@ -32,11 +32,11 @@ class Game:
         if not self._valid_position(y, x):
             raise Exception("({},{}) is not a valid position.".format(y, x))
 
-        penalty_useless_action = -2
+        penalty_useless_action = -5
         if flag:
             if self._overlay[y, x] == self._UNOPENED:
                 self._overlay[y, x] = self._FLAG
-                reward = 1
+                reward = -3
             elif self._overlay[y, x] == self._FLAG:
                 self._overlay[y, x] = self._UNOPENED
                 reward = -1
@@ -115,9 +115,9 @@ class Game:
         self._overlay = np.zeros((size_y, size_x), np.int8) + self._UNOPENED
 
         possible_fields = [(y, x) for y in range(size_y) for x in range(size_x)]
-        # self._mines = random.sample(possible_fields, mine_count)
+        self._mines = random.sample(possible_fields, mine_count)
 
-        self._mines = [(2, 2)]
+        # self._mines = [(2, 2)]
 
         # Set up values to define near mines
         for mine in self._mines:

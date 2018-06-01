@@ -120,3 +120,5 @@ ENV/
 .svn 
 .toc
 
+# models
+dqn/
