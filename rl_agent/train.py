@@ -8,6 +8,8 @@ import qnetwork
 sys.path.append('../base/')
 from minesweeper import Game
 
+print("Initialize training.")
+
 # Game parameters
 field_size = 8
 num_actions = field_size*field_size*2
@@ -50,6 +52,7 @@ total_steps = 0
 if not os.path.exists(path):
     os.makedirs(path)
 
+print("Start training.")
 with tf.Session() as sess:
     sess.run(init)
     if load_model:
@@ -66,7 +69,7 @@ with tf.Session() as sess:
         j = 0
         actions = []
         # The Q-Network
-        while j < max_epLength and rAll > -100:  # If the network takes more moves than needed for the field, cancel episode
+        while j < max_epLength:  # If the network takes more moves than needed for the field, cancel episode
             j += 1
             # Choose an action by greedily (with e chance of random action) from the Q-network
             if np.random.rand(1) < e or total_steps < pre_train_steps:
@@ -117,9 +120,9 @@ with tf.Session() as sess:
             print(actions)
             print('Reward for this game: {}'.format(rAll))
         # Periodically save the model.
-        if i % 1000 == 0:
-            saver.save(sess, path+'/model-'+str(i)+'.ckpt')
-            print("Saved Model")
+#         if i % 1000 == 0:
+#             saver.save(sess, path+'/model-'+str(i)+'.ckpt')
+#             print("Saved Model")
         if len(rList) % 10 == 0:
             print(total_steps, np.mean(rList[-100:]))
     saver.save(sess, path+'/model-'+str(i)+'.ckpt')
