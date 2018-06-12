@@ -9,17 +9,14 @@ sys.path.append('../base/')
 from minesweeper import Game
 
 # Game parameters
-field_size = 5
+field_size = 8
 num_actions = field_size*field_size*2
-mines = 1
+mines = 10
 
 # Training parameters
 batch_size = 32  # How many experiences to use for each training step.
 update_freq = 4  # How often to perform a training step.
 y = .99  # Discount factor on the target Q-values
-startE = 1  # Starting chance of random action
-endE = 0.1  # Final chance of random action
-annealing_steps = 100000.  # How many steps of training to reduce startE to endE.
 num_episodes = 100000  # How many episodes of game environment to train network with.
 pre_train_steps = 10000  # How many steps of random actions before training begins.
 max_epLength = 200  # The max allowed length of our episode.
@@ -41,9 +38,8 @@ targetOps = qnetwork.update_target_graph(trainables, tau)
 
 myBuffer = qnetwork.ExperienceBuffer()
 
-# Set the rate of random action decrease.
-e = startE
-stepDrop = (startE - endE)/annealing_steps
+# Set the rate of random actions
+e = 0.001
 
 # create lists to contain total rewards and steps per episode
 jList = []
@@ -88,25 +84,21 @@ with tf.Session() as sess:
             total_steps += 1
             episodeBuffer.add(np.reshape(np.array([s, original_action, r, s1, d]), [1, 5]))  # Save experience to episode buffer.
 
-            if total_steps > pre_train_steps:
-                if e > endE:
-                    e -= stepDrop
+            if total_steps > pre_train_steps and total_steps % update_freq:
+                trainBatch = myBuffer.sample(batch_size)  # Get a random batch of experiences.
+                # Below we perform the Double-DQN update to the target Q-values
+                Q1 = sess.run(mainQN.predict, feed_dict={mainQN.input: np.reshape(np.stack(trainBatch[:, 3]), [-1, field_size, field_size, 1])})
+                Q2 = sess.run(targetQN.Qout, feed_dict={targetQN.input: np.reshape(np.stack(trainBatch[:, 3]), [-1, field_size, field_size, 1])})
+                end_multiplier = -(trainBatch[:, 4] - 1)
+                doubleQ = Q2[range(batch_size), Q1]
+                targetQ = trainBatch[:, 2] + (y*doubleQ * end_multiplier)
+                # Update the network with our target values.
+                _ = sess.run(mainQN.updateModel,
+                             feed_dict={mainQN.input: np.reshape(np.stack(trainBatch[:, 0]), [-1, field_size, field_size, 1]),
+                                        mainQN.targetQ: targetQ,
+                                        mainQN.actions: trainBatch[:, 1]})
 
-                if total_steps % update_freq == 0:
-                    trainBatch = myBuffer.sample(batch_size)  # Get a random batch of experiences.
-                    # Below we perform the Double-DQN update to the target Q-values
-                    Q1 = sess.run(mainQN.predict, feed_dict={mainQN.input: np.reshape(np.stack(trainBatch[:, 3]), [-1, field_size, field_size, 1])})
-                    Q2 = sess.run(targetQN.Qout, feed_dict={targetQN.input: np.reshape(np.stack(trainBatch[:, 3]), [-1, field_size, field_size, 1])})
-                    end_multiplier = -(trainBatch[:, 4] - 1)
-                    doubleQ = Q2[range(batch_size), Q1]
-                    targetQ = trainBatch[:, 2] + (y*doubleQ * end_multiplier)
-                    # Update the network with our target values.
-                    _ = sess.run(mainQN.updateModel,
-                                 feed_dict={mainQN.input: np.reshape(np.stack(trainBatch[:, 0]), [-1, field_size, field_size, 1]),
-                                            mainQN.targetQ: targetQ,
-                                            mainQN.actions: trainBatch[:, 1]})
-
-                    qnetwork.update_target(targetOps, sess)  # Update the target network toward the primary network.
+                qnetwork.update_target(targetOps, sess)  # Update the target network toward the primary network.
             rAll += r
             s = s1
             actions.append((y, x, flag))
@@ -129,6 +121,6 @@ with tf.Session() as sess:
             saver.save(sess, path+'/model-'+str(i)+'.ckpt')
             print("Saved Model")
         if len(rList) % 10 == 0:
-            print(total_steps, np.mean(rList[-10:]), e)
+            print(total_steps, np.mean(rList[-100:]))
     saver.save(sess, path+'/model-'+str(i)+'.ckpt')
 print("Average reward per episodes: " + str(sum(rList)/num_episodes))

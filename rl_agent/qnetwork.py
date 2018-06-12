@@ -7,23 +7,29 @@ import tensorflow.contrib.slim as slim
 class QNetwork:
     def __init__(self, field_size, num_actions):
         # None shapes are for batch sizes
-        size_final_layer = 128
+        size_final_layer = 512
         self.input = tf.placeholder(shape=[None, field_size, field_size, 1], dtype=tf.float32)
         self.conv1 = slim.conv2d(inputs=self.input,
-                                 num_outputs=64,
-                                 kernel_size=[3, 3],
+                                 num_outputs=128,
+                                 kernel_size=[5, 5],
                                  stride=[1, 1],
                                  padding='VALID',
                                  biases_initializer=None)
         self.conv2 = slim.conv2d(inputs=self.conv1,
-                                 num_outputs=size_final_layer,
+                                 num_outputs=256,
                                  kernel_size=[2, 2],
+                                 stride=[1, 1],
+                                 padding='VALID',
+                                 biases_initializer=None)
+        self.conv3 = slim.conv2d(inputs=self.conv2,
+                                 num_outputs=size_final_layer,
+                                 kernel_size=[3, 3],
                                  stride=[1, 1],
                                  padding='VALID',
                                  biases_initializer=None)
 
         # Take output of convolution and create fully connected layer, if understood correctly
-        self.stream = slim.flatten(self.conv2)
+        self.stream = slim.flatten(self.conv3)
         # self.stream = slim.flatten(self.input)  # Test for directly learning on the input
         xavier_init = tf.contrib.layers.xavier_initializer()
         # First dimension is batch_size
