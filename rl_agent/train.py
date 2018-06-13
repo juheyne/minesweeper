@@ -2,6 +2,7 @@ import sys
 import os
 import tensorflow as tf
 import numpy as np
+import matplotlib.pyplot as plt
 
 sys.path.append('../rl_agent/')
 import qnetwork
@@ -13,15 +14,15 @@ print("Initialize training.")
 # Game parameters
 field_size = 8
 num_actions = field_size*field_size*2
-mines = 10
+mines = 1
 
 # Training parameters
 batch_size = 32  # How many experiences to use for each training step.
 update_freq = 4  # How often to perform a training step.
 y = .99  # Discount factor on the target Q-values
-num_episodes = 100000  # How many episodes of game environment to train network with.
+num_episodes = 10000  # How many episodes of game environment to train network with.
 pre_train_steps = 10000  # How many steps of random actions before training begins.
-max_epLength = 200  # The max allowed length of our episode.
+max_epLength = 20  # The max allowed length of our episode.
 load_model = False  # Whether to load a saved model.
 path = "../dqn"  # The path to save our model to.
 tau = 0.0001  # Rate to update target network toward primary network
@@ -127,3 +128,9 @@ with tf.Session() as sess:
             print(total_steps, np.mean(rList[-100:]))
     saver.save(sess, path+'/model-'+str(i)+'.ckpt')
 print("Average reward per episodes: " + str(sum(rList)/num_episodes))
+
+
+# Plotting
+rMat = np.resize(np.array(rList),[len(rList)//100,100])
+rMean = np.average(rMat,1)
+plt.plot(rMean)
