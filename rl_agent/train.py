@@ -13,8 +13,8 @@ print("Initialize training.")
 
 # Game parameters
 field_size = 8
-num_actions = field_size*field_size*2
-mines = 1
+num_actions = field_size*field_size
+mines = 5
 
 # Training parameters
 batch_size = 32  # How many experiences to use for each training step.
@@ -25,7 +25,7 @@ pre_train_steps = 10000  # How many steps of random actions before training begi
 max_epLength = 20  # The max allowed length of our episode.
 load_model = False  # Whether to load a saved model.
 path = "../dqn"  # The path to save our model to.
-tau = 0.0001  # Rate to update target network toward primary network
+tau = 0.001  # Rate to update target network toward primary network
 
 # Start training
 tf.reset_default_graph()
@@ -77,16 +77,10 @@ with tf.Session() as sess:
                 a = np.random.randint(0, num_actions)
             else:
                 a = sess.run(mainQN.predict, feed_dict={mainQN.input: np.reshape(s, [-1, field_size, field_size, 1])})[0]
-            original_action = a
-            if a >= num_actions//2:
-                a -= num_actions//2
-                flag = True
-            else:
-                flag = False
             y, x = np.unravel_index(a, (field_size, field_size))
-            s1, r, d = game.action(y, x, flag)
+            s1, r, d = game.action(y, x, False)
             total_steps += 1
-            episodeBuffer.add(np.reshape(np.array([s, original_action, r, s1, d]), [1, 5]))  # Save experience to episode buffer.
+            episodeBuffer.add(np.reshape(np.array([s, a, r, s1, d]), [1, 5]))  # Save experience to episode buffer.
 
             if total_steps > pre_train_steps and total_steps % update_freq:
                 trainBatch = myBuffer.sample(batch_size)  # Get a random batch of experiences.
@@ -105,7 +99,7 @@ with tf.Session() as sess:
                 qnetwork.update_target(targetOps, sess)  # Update the target network toward the primary network.
             rAll += r
             s = s1
-            actions.append((y, x, flag))
+            actions.append((y, x, False))
 
             if d:
                 break
@@ -134,3 +128,4 @@ print("Average reward per episodes: " + str(sum(rList)/num_episodes))
 rMat = np.resize(np.array(rList),[len(rList)//100,100])
 rMean = np.average(rMat,1)
 plt.plot(rMean)
+plt.show()

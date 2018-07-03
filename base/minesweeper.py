@@ -96,7 +96,8 @@ class Game:
         """Return -1, 0 or 1 if the game is lost, undecided or won."""
         overlay = np.copy(self._overlay)
         for mine in self._mines:
-            if overlay[mine[0], mine[1]] == self._FLAG:  # Remove flag from found mines
+            # If mine is unopened or flagged open it
+            if overlay[mine[0], mine[1]] == self._UNOPENED or overlay[mine[0], mine[1]] == self._FLAG:
                 overlay[mine[0], mine[1]] = self._OPENED
         if np.any(overlay == self._MINE):
             return -1
@@ -117,7 +118,7 @@ class Game:
         possible_fields = [(y, x) for y in range(size_y) for x in range(size_x)]
         self._mines = random.sample(possible_fields, mine_count)
 
-        self._mines = [(2, 2)]
+        self._mines = [(1, 1), (1, 3), (1, 5), (3, 1), (5, 1), (3, 3), (5, 5)]
 
         # Set up values to define near mines
         for mine in self._mines:
