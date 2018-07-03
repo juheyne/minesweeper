@@ -7,16 +7,16 @@ import tensorflow.contrib.slim as slim
 class QNetwork:
     def __init__(self, field_size, num_actions):
         # None shapes are for batch sizes
-        size_final_layer = 128 
-        self.input = tf.placeholder(shape=[None, field_size, field_size, 1], dtype=tf.float32)
+        size_final_layer = 256
+        self.input = tf.placeholder(shape=[None, field_size, field_size, 2], dtype=tf.float32)
         self.conv1 = slim.conv2d(inputs=self.input,
-                                 num_outputs=32,
+                                 num_outputs=64,
                                  kernel_size=[5, 5],
                                  stride=[1, 1],
                                  padding='VALID',
                                  biases_initializer=None)
         self.conv2 = slim.conv2d(inputs=self.conv1,
-                                 num_outputs=64,
+                                 num_outputs=128,
                                  kernel_size=[2, 2],
                                  stride=[1, 1],
                                  padding='VALID',

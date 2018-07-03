@@ -32,18 +32,20 @@ class Game:
         if not self._valid_position(y, x):
             raise Exception("({},{}) is not a valid position.".format(y, x))
 
-        penalty_useless_action = -5
+        penalty_useless_action = -2
         if flag:
-            if self._overlay[y, x] == self._UNOPENED:
-                self._overlay[y, x] = self._FLAG
+            if self._overlay[y, x, 1] == 0:
+                self._overlay[y, x, 0] = self._FLAG
+                self._overlay[y, x, 1] = 1
                 reward = -3
-            elif self._overlay[y, x] == self._FLAG:
-                self._overlay[y, x] = self._UNOPENED
+            elif self._overlay[y, x, 0] == self._FLAG:
+                self._overlay[y, x, 0] = self._UNOPENED
+                self._overlay[y, x, 1] = 0
                 reward = -1
             else:  # Try to flag an already open area
                 reward = penalty_useless_action
         else:
-            if self._overlay[y, x] == self._UNOPENED:
+            if self._overlay[y, x, 1] == 0:
                 self._open_overlay(y, x)
                 reward = 1
             else:  # Try to open an already open area
@@ -97,13 +99,13 @@ class Game:
         overlay = np.copy(self._overlay)
         for mine in self._mines:
             # If mine is unopened or flagged open it
-            if overlay[mine[0], mine[1]] == self._UNOPENED or overlay[mine[0], mine[1]] == self._FLAG:
-                overlay[mine[0], mine[1]] = self._OPENED
-        if np.any(overlay == self._MINE):
+            if overlay[mine[0], mine[1], 1] == 0 or overlay[mine[0], mine[1], 0] == self._FLAG:
+                overlay[mine[0], mine[1], 1] = 1
+        if np.any(overlay[:, :, 0] == self._MINE):
             return -1
-        elif np.any(overlay == self._FLAG):  # Check that only mines are flagged
+        elif np.any(overlay[:, :, 0] == self._FLAG):  # Check that only mines are flagged
             return 0
-        elif np.all(overlay != self._UNOPENED):
+        elif np.all(overlay[:, :, 1] != 0):  # All fields are open and no fields are flags or mines
             return 1
         else:
             return 0
@@ -113,12 +115,13 @@ class Game:
 
         First dimension is y and second dimension is x."""
         self._field = np.zeros((size_y, size_x), np.int8)
-        self._overlay = np.zeros((size_y, size_x), np.int8) + self._UNOPENED
+        self._overlay = np.zeros((size_y, size_x, 2), np.int8)
+        self._overlay[:, :, 0] = self._UNOPENED
 
         possible_fields = [(y, x) for y in range(size_y) for x in range(size_x)]
         self._mines = random.sample(possible_fields, mine_count)
 
-        self._mines = [(1, 1), (1, 3), (1, 5), (3, 1), (5, 1), (3, 3), (5, 5)]
+        # self._mines = [(3, 3), (6, 6)]
 
         # Set up values to define near mines
         for mine in self._mines:
@@ -144,9 +147,10 @@ class Game:
 
     def _open_overlay(self, y, x):
         """Open overlay around the opened position."""
-        if self._overlay[y, x] == self._UNOPENED:
-            self._overlay[y, x] = self._field[y, x]
-            if self._overlay[y, x] == 0:
+        if self._overlay[y, x, 1] == 0:
+            self._overlay[y, x, 0] = self._field[y, x]
+            self._overlay[y, x, 1] = 1
+            if self._overlay[y, x, 0] == 0:
                 [self._open_overlay(ny, nx) for ny, nx in self._neighbours(y, x)]
 
     def _neighbours(self, y, x):
@@ -162,7 +166,7 @@ class Game:
         return neighbours
 
     def show_field(self):
-        field = np.array2string(self._overlay, sign=' ')
+        field = np.array2string(self._overlay[:, :, 0], sign=' ')
         # Print top row containing labels
         print('     ' + '  '.join(self._top_labels))
         for label, row in zip(ascii_lowercase[:self._size_y], field.splitlines()):
