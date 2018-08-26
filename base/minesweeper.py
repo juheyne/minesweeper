@@ -131,7 +131,7 @@ class Game:
         possible_fields = [(y, x) for y in range(size_y) for x in range(size_x)]
         self._mines = random.sample(possible_fields, mine_count)
 
-        self._mines = [(4, 0), (6, 0), (0, 4), (7, 3), (4, 5), (0, 6), (1, 6), (4, 6), (1, 7), (6, 7)]
+        # self._mines = [(4, 0), (6, 0), (0, 4), (7, 3), (4, 5), (0, 6), (1, 6), (4, 6), (1, 7), (6, 7)]
 
         # Set up values to define near mines
         for mine in self._mines:

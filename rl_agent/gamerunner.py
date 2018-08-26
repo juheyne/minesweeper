@@ -124,21 +124,21 @@ class GameRunner:
         return self._max_x_store
 
 
-MAX_EPSILON = 0.5
+MAX_EPSILON = 0.25
 MIN_EPSILON = 0.001
-LAMBDA = 0.00001
+LAMBDA = 0.000001
 GAMMA = 0.99
-BATCH_SIZE = 250
+BATCH_SIZE = 500
 
 STARTUP_GAMES = 2000
-NUM_EPISODES = 40000
+NUM_EPISODES = 10000
 
-SIZE_X = 8
-SIZE_Y = 8
-MINES = 10
+SIZE_X = 3
+SIZE_Y = 3
+MINES = 1
 MAX_STEPS = 100
 
-TEST_EPISODES = 100
+TEST_EPISODES = 1000
 
 if __name__ == "__main__":
     env = Game(SIZE_Y, SIZE_X, MINES)
@@ -150,27 +150,27 @@ if __name__ == "__main__":
     mem = Memory(50000)
 
     # Training
-    # print("Training...")
-    # with tf.Session() as sess:
-    #     sess.run(model.var_init)
-    #     gr = GameRunner(sess, model, env, mem, MAX_EPSILON, MIN_EPSILON, GAMMA, LAMBDA, MAX_STEPS)
-    #     gr.startup(STARTUP_GAMES)
-    #     print("Startup of {} games finished.".format(STARTUP_GAMES))
-    #     cnt = 1
-    #     while cnt <= NUM_EPISODES:
-    #         if cnt % 100 == 0:
-    #             print('Episode {} of {}'.format(cnt, NUM_EPISODES))
-    #             print('Average reward: {}, eps: {}'.format(np.mean(gr.reward_store[-100:]), gr.eps))
-    #         gr.run()
-    #         cnt += 1
-    #
-    #     # Save model for later use and testing
-    #     print("Saving model...")
-    #     saver.save(sess, "../tmp/model")
-    #
-    #     # Plot average reward per 100 games over time
-    #     plt.plot(np.convolve(gr.reward_store, np.ones((100,))/100, mode='valid'))
-    #     plt.show()
+    print("Training...")
+    with tf.Session() as sess:
+        sess.run(model.var_init)
+        gr = GameRunner(sess, model, env, mem, MAX_EPSILON, MIN_EPSILON, GAMMA, LAMBDA, MAX_STEPS)
+        gr.startup(STARTUP_GAMES)
+        print("Startup of {} games finished.".format(STARTUP_GAMES))
+        cnt = 1
+        while cnt <= NUM_EPISODES:
+            if cnt % 100 == 0:
+                print('Episode {} of {}'.format(cnt, NUM_EPISODES))
+                print('Average reward: {}, eps: {}'.format(np.mean(gr.reward_store[-100:]), gr.eps))
+            gr.run()
+            cnt += 1
+
+        # Save model for later use and testing
+        print("Saving model...")
+        saver.save(sess, "../tmp/model")
+
+        # Plot average reward per 100 games over time
+        plt.plot(np.convolve(gr.reward_store, np.ones((100,))/100, mode='valid'))
+        plt.show()
 
     # Testing
     print("Testing...")
