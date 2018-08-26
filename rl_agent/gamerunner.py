@@ -131,12 +131,12 @@ GAMMA = 0.99
 BATCH_SIZE = 500
 
 STARTUP_GAMES = 2000
-NUM_EPISODES = 10000
+NUM_EPISODES = 80000
 
-SIZE_X = 3
-SIZE_Y = 3
-MINES = 1
-MAX_STEPS = 100
+SIZE_X = 4
+SIZE_Y = 4
+MINES = 2
+MAX_STEPS = SIZE_X*SIZE_Y
 
 TEST_EPISODES = 1000
 
@@ -177,7 +177,8 @@ if __name__ == "__main__":
     with tf.Session() as sess:
         saver.restore(sess, tf.train.latest_checkpoint('../tmp/'))
         test_reward = []
-        won_games = 0
+        test_steps = []
+        test_results = []
         for _ in range(TEST_EPISODES):
             state = env.reset()
             steps = 0
@@ -200,11 +201,12 @@ if __name__ == "__main__":
                 # if the game is done, break the loop
                 if done or steps > MAX_STEPS:
                     test_reward.append(tot_reward)
-                    if env.won() == 1:
-                        won_games += 1
+                    test_steps.append(steps)
+                    test_results.append(env.won())
                     break
 
         print("Test Results:")
         print("Average reward: {}".format(np.mean(test_reward)))
-        print("Win rate: {}".format(won_games/TEST_EPISODES))
-
+        print("Win rate: {}".format(test_results.count(1)/TEST_EPISODES))
+        print("Lose rate: {}".format(test_results.count(-1)/TEST_EPISODES))
+        print("Stuck games rate: {}".format((test_results.count(0)/TEST_EPISODES)))
