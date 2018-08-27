@@ -13,7 +13,7 @@ from minesweeper import Game
 
 
 class GameRunner:
-    def __init__(self, sess, model, env, memory, max_eps, min_eps, gamma, decay, max_steps):
+    def __init__(self, sess, model, env, memory, max_eps, min_eps, gamma, decay, keep_prob, max_steps):
         self._sess = sess
         self._env = env
         self._model = model
@@ -22,6 +22,7 @@ class GameRunner:
         self._min_eps = min_eps
         self._gamma = gamma
         self._decay = decay
+        self._keep_prob = keep_prob
         self._eps = self._max_eps
         self._max_steps = max_steps
         self._steps = 0
@@ -83,16 +84,16 @@ class GameRunner:
         if random.random() < self._eps:
             return random.randint(0, self._model.num_actions - 1)
         else:
-            return np.argmax(self._model.predict_one(self._sess, state))
+            return np.argmax(self._model.predict_one(self._sess, state, self._keep_prob))
 
     def _replay(self):
         batch = self._memory.sample(self._model.batch_size)
         states = np.array([np.zeros(self._model.dimensions) if val[0] is None else val[0] for val in batch])
         next_states = np.array([(np.zeros(self._model.dimensions) if val[3] is None else val[3]) for val in batch])
         # predict Q(s,a) given the batch of states
-        q_s_a = self._model.predict_batch(self._sess, states)
+        q_s_a = self._model.predict_batch(self._sess, states, self._keep_prob)
         # predict Q(s',a') - so that we can do gamma * max(Q(s'a')) below
-        q_s_a_d = self._model.predict_batch(self._sess, next_states)
+        q_s_a_d = self._model.predict_batch(self._sess, next_states, self._keep_prob)
         # setup training arrays
         x = np.zeros((len(batch), *self._model.dimensions))
         qs = np.zeros((len(batch), self._model.num_actions))
@@ -124,14 +125,15 @@ class GameRunner:
         return self._max_x_store
 
 
-MAX_EPSILON = 0.25
+MAX_EPSILON = 0.20
 MIN_EPSILON = 0.001
 LAMBDA = 0.000001
+KEEP_PROB = 0.6
 GAMMA = 0.99
 BATCH_SIZE = 500
 
-STARTUP_GAMES = 2000
-NUM_EPISODES = 80000
+STARTUP_GAMES = 5000
+NUM_EPISODES = 100000
 
 SIZE_X = 4
 SIZE_Y = 4
@@ -153,7 +155,7 @@ if __name__ == "__main__":
     print("Training...")
     with tf.Session() as sess:
         sess.run(model.var_init)
-        gr = GameRunner(sess, model, env, mem, MAX_EPSILON, MIN_EPSILON, GAMMA, LAMBDA, MAX_STEPS)
+        gr = GameRunner(sess, model, env, mem, MAX_EPSILON, MIN_EPSILON, GAMMA, LAMBDA, KEEP_PROB, MAX_STEPS)
         gr.startup(STARTUP_GAMES)
         print("Startup of {} games finished.".format(STARTUP_GAMES))
         cnt = 1
