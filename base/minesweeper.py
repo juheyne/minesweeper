@@ -17,8 +17,18 @@ class Game:
     def __init__(self, size_y, size_x, mine_count):
         self._size_y = size_y
         self._size_x = size_x
-        self._create_minefield(size_x, size_y, mine_count)
+        self._mine_count = mine_count
         self._top_labels = [str(label) for label in list(range(size_x))]
+        self.reset()
+
+    def reset(self):
+        self._create_minefield(self._size_y, self._size_x, self._mine_count)
+        return self.state()
+
+    def step(self, n_action):
+        """Action specified as linear index of a field to be opened."""
+        y, x = np.unravel_index(n_action, (self._size_y, self._size_x))
+        return self.action(y, x, False)
 
     def action(self, y, x, flag):
         """Take an action by either flagging or selecting a field.
@@ -32,7 +42,7 @@ class Game:
         if not self._valid_position(y, x):
             raise Exception("({},{}) is not a valid position.".format(y, x))
 
-        penalty_useless_action = -2
+        penalty_useless_action = -20
         if flag:
             if self._overlay[y, x, 1] == 0:
                 self._overlay[y, x, 0] = self._FLAG
@@ -110,7 +120,7 @@ class Game:
         else:
             return 0
 
-    def _create_minefield(self, size_x, size_y, mine_count):
+    def _create_minefield(self, size_y, size_x, mine_count):
         """Create minefield with random mine distribution.
 
         First dimension is y and second dimension is x."""
@@ -121,7 +131,7 @@ class Game:
         possible_fields = [(y, x) for y in range(size_y) for x in range(size_x)]
         self._mines = random.sample(possible_fields, mine_count)
 
-        # self._mines = [(3, 3), (6, 6)]
+        # self._mines = [(4, 0), (6, 0), (0, 4), (7, 3), (4, 5), (0, 6), (1, 6), (4, 6), (1, 7), (6, 7)]
 
         # Set up values to define near mines
         for mine in self._mines:
