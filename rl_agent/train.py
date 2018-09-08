@@ -12,9 +12,9 @@ from minesweeper import Game
 print("Initialize training.")
 
 # Game parameters
-field_size = 8
+field_size = 5
 num_actions = field_size*field_size
-mines = 5
+mines = 3
 
 # Training parameters
 batch_size = 100  # How many experiences to use for each training step.
