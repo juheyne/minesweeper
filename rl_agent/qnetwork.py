@@ -11,7 +11,7 @@ class QNetwork:
         self.input = tf.placeholder(shape=[None, field_size, field_size, 2], dtype=tf.float32)
         self.conv1 = slim.conv2d(inputs=self.input,
                                  num_outputs=64,
-                                 kernel_size=[5, 5],
+                                 kernel_size=[3, 3],
                                  stride=[1, 1],
                                  padding='VALID',
                                  biases_initializer=None)
@@ -23,7 +23,7 @@ class QNetwork:
                                  biases_initializer=None)
         self.conv3 = slim.conv2d(inputs=self.conv2,
                                  num_outputs=size_final_layer,
-                                 kernel_size=[3, 3],
+                                 kernel_size=[2, 2],
                                  stride=[1, 1],
                                  padding='VALID',
                                  biases_initializer=None)
