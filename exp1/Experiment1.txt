@@ -1,0 +1,1 @@
+Experiment1: >> field size = 5, mines = 3, kernel size = [3,3] & [2,2] & [1,1]>> Rewarding Policy: Useless_action = -20 Unopened = -3 Mine = -1   Flag = -2 opened = 0>> Average reward per episode = -799.95965>> Wins = 1
