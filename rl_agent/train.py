@@ -29,8 +29,8 @@ tau = 0.0001  # Rate to update target network toward primary network
 
 # Start training
 tf.reset_default_graph()
-mainQN = qnetwork.QNetwork(field_size, num_actions)
-targetQN = qnetwork.QNetwork(field_size, num_actions)
+mainQN = qnetwork.QNetwork(field_size, num_actions, True)
+targetQN = qnetwork.QNetwork(field_size, num_actions, True)
 
 init = tf.global_variables_initializer()
 

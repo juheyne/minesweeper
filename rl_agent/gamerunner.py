@@ -27,6 +27,7 @@ class GameRunner:
         self._max_steps = max_steps
         self._steps = 0
         self._reward_store = []
+        self._result_store = []
 
     def startup(self, n_pre_games):
         for x in range(n_pre_games):
@@ -76,6 +77,7 @@ class GameRunner:
             # if the game is done, break the loop
             if done or steps > self._max_steps:
                 self._reward_store.append(tot_reward)
+                self._result_store.append(self._env.won())
                 break
 
         # print("Steps {}, Total reward: {}, Eps: {}".format(self._steps, tot_reward, self._eps))
@@ -121,26 +123,27 @@ class GameRunner:
         return self._reward_store
 
     @property
-    def max_x_store(self):
-        return self._max_x_store
+    def result_store(self):
+        return self._result_store
 
 
 MAX_EPSILON = 0.20
 MIN_EPSILON = 0.001
-LAMBDA = 0.000001
-KEEP_PROB = 0.6
-GAMMA = 0.99
-BATCH_SIZE = 500
+LAMBDA = 0.000009
+KEEP_PROB = 0.8
+GAMMA = 0.95
+BATCH_SIZE = 750
 
-STARTUP_GAMES = 5000
-NUM_EPISODES = 100000
-
-SIZE_X = 4
-SIZE_Y = 4
-MINES = 2
+SIZE_X = 5
+SIZE_Y = 5
+MINES = 5
 MAX_STEPS = SIZE_X*SIZE_Y
 
-TEST_EPISODES = 1000
+MEMORY_SIZE = 50000
+STARTUP_GAMES = int(MEMORY_SIZE/MAX_STEPS)
+TEST_EPISODES = 5000
+
+NUM_EPISODES = 400000
 
 if __name__ == "__main__":
     env = Game(SIZE_Y, SIZE_X, MINES)
@@ -149,7 +152,7 @@ if __name__ == "__main__":
 
     model = Model(SIZE_Y, SIZE_X, num_actions, BATCH_SIZE)
     saver = tf.train.Saver(max_to_keep=1)
-    mem = Memory(50000)
+    mem = Memory(MEMORY_SIZE)
 
     # Training
     print("Training...")
@@ -160,9 +163,14 @@ if __name__ == "__main__":
         print("Startup of {} games finished.".format(STARTUP_GAMES))
         cnt = 1
         while cnt <= NUM_EPISODES:
-            if cnt % 100 == 0:
+            information_interval = 200
+            if cnt % information_interval == 0:
+                last_rewards = gr.reward_store[-information_interval:]
+                last_results = gr.result_store[-information_interval:]
                 print('Episode {} of {}'.format(cnt, NUM_EPISODES))
-                print('Average reward: {}, eps: {}'.format(np.mean(gr.reward_store[-100:]), gr.eps))
+                print('Average reward: {}, eps: {}'.format(np.mean(last_rewards), gr.eps))
+                print('Win/Lose/Unfinished rate: {}, {}, {}'.format(last_results.count(1)/information_interval,
+                      last_results.count(-1)/information_interval, last_results.count(0)/information_interval))
             gr.run()
             cnt += 1
 
@@ -171,7 +179,8 @@ if __name__ == "__main__":
         saver.save(sess, "../tmp/model")
 
         # Plot average reward per 100 games over time
-        plt.plot(np.convolve(gr.reward_store, np.ones((100,))/100, mode='valid'))
+        plt.plot(np.convolve(gr.reward_store, np.ones((100,))/100, mode='valid'), 'b-', label='average over 100 games')
+        plt.plot(np.convolve(gr.reward_store, np.ones((5000,))/5000, mode='valid'), 'r-', label='average over 1000 games')
         plt.show()
 
     # Testing

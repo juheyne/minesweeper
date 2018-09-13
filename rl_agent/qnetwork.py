@@ -5,36 +5,42 @@ import tensorflow.contrib.slim as slim
 
 
 class QNetwork:
-    def __init__(self, field_size, num_actions):
+    def __init__(self, field_size, num_actions, is_training):
+        self.is_training = is_training
         # None shapes are for batch sizes
         size_final_layer = 256
         self.input = tf.placeholder(shape=[None, field_size, field_size, 2], dtype=tf.float32)
-        self.conv1 = slim.conv2d(inputs=self.input,
-                                 num_outputs=64,
-                                 kernel_size=[5, 5],
-                                 stride=[1, 1],
-                                 padding='VALID',
-                                 biases_initializer=None)
-        self.conv2 = slim.conv2d(inputs=self.conv1,
-                                 num_outputs=128,
-                                 kernel_size=[2, 2],
-                                 stride=[1, 1],
-                                 padding='VALID',
-                                 biases_initializer=None)
-        self.conv3 = slim.conv2d(inputs=self.conv2,
-                                 num_outputs=size_final_layer,
-                                 kernel_size=[3, 3],
-                                 stride=[1, 1],
-                                 padding='VALID',
-                                 biases_initializer=None)
+        self.stream = slim.flatten(self.input)
 
-        # Take output of convolution and create fully connected layer, if understood correctly
-        self.stream = slim.flatten(self.conv3)
-        # self.stream = slim.flatten(self.input)  # Test for directly learning on the input
-        xavier_init = tf.contrib.layers.xavier_initializer()
-        # First dimension is batch_size
-        self.W = tf.Variable(xavier_init([self.stream.get_shape().as_list()[1], num_actions]))
-        self.Qout = tf.matmul(self.stream, self.W)
+        self.dense1 = tf.layers.dense(inputs=self.stream, units=1024, activation=tf.nn.relu)
+        self.dropout1 = tf.layers.dropout(inputs=self.dense1, rate=0.2, training=self.is_training)
+        self.Qout = tf.layers.dense(inputs=self.dense1, units=num_actions)
+        # self.conv1 = slim.conv2d(inputs=self.input,
+        #                          num_outputs=64,
+        #                          kernel_size=[5, 5],
+        #                          stride=[1, 1],
+        #                          padding='VALID',
+        #                          biases_initializer=None)
+        # self.conv2 = slim.conv2d(inputs=self.conv1,
+        #                          num_outputs=128,
+        #                          kernel_size=[2, 2],
+        #                          stride=[1, 1],
+        #                          padding='VALID',
+        #                          biases_initializer=None)
+        # self.conv3 = slim.conv2d(inputs=self.conv2,
+        #                          num_outputs=size_final_layer,
+        #                          kernel_size=[3, 3],
+        #                          stride=[1, 1],
+        #                          padding='VALID',
+        #                          biases_initializer=None)
+        #
+        # # Take output of convolution and create fully connected layer, if understood correctly
+        # self.stream = slim.flatten(self.conv3)
+        # # self.stream = slim.flatten(self.input)  # Test for directly learning on the input
+        # xavier_init = tf.contrib.layers.xavier_initializer()
+        # # First dimension is batch_size
+        # self.W = tf.Variable(xavier_init([self.stream.get_shape().as_list()[1], num_actions]))
+        # self.Qout = tf.matmul(self.stream, self.W)
         self.predict = tf.argmax(self.Qout, 1)
 
         # Create action layer
