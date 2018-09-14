@@ -62,7 +62,7 @@ class GameRunner:
 
             self._memory.add_sample((state, action, reward, next_state))
 
-            if self._steps % 5 == 0:
+            if self._steps % 10 == 0:
                 self._replay()
 
             # exponentially decay the eps value
@@ -127,7 +127,7 @@ class GameRunner:
         return self._result_store
 
 
-MAX_EPSILON = 0.20
+MAX_EPSILON = 0.10
 MIN_EPSILON = 0.001
 LAMBDA = 0.000009
 KEEP_PROB = 0.8
@@ -143,7 +143,7 @@ MEMORY_SIZE = 50000
 STARTUP_GAMES = int(MEMORY_SIZE/MAX_STEPS)
 TEST_EPISODES = 5000
 
-NUM_EPISODES = 400000
+TRAIN_EPISODES = 400000
 
 if __name__ == "__main__":
     env = Game(SIZE_Y, SIZE_X, MINES)
@@ -162,12 +162,12 @@ if __name__ == "__main__":
         gr.startup(STARTUP_GAMES)
         print("Startup of {} games finished.".format(STARTUP_GAMES))
         cnt = 1
-        while cnt <= NUM_EPISODES:
+        while cnt <= TRAIN_EPISODES:
             information_interval = 200
             if cnt % information_interval == 0:
                 last_rewards = gr.reward_store[-information_interval:]
                 last_results = gr.result_store[-information_interval:]
-                print('Episode {} of {}'.format(cnt, NUM_EPISODES))
+                print('Episode {} of {}'.format(cnt, TRAIN_EPISODES))
                 print('Average reward: {}, eps: {}'.format(np.mean(last_rewards), gr.eps))
                 print('Win/Lose/Unfinished rate: {}, {}, {}'.format(last_results.count(1)/information_interval,
                       last_results.count(-1)/information_interval, last_results.count(0)/information_interval))

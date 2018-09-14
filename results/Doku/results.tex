@@ -1,0 +1,156 @@
+\documentclass{article}
+%\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{array,multirow}
+
+\begin{document}
+\begin{tabularx}{\textwidth}{l|r|X|r}
+Name & Datei & Variable & Wert \\
+\hline
+\multirow{21}{*}{Figure 1} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.20\\
+& & MIN EPSILON	& 0.001 \\
+& & LAMBDA & 0.000009 \\
+& & KEEP PROB & 0.8 \\
+& & GAMMA	& 0.95 \\
+& & SIZE X & 5 \\
+& & SIZE Y & 5 \\
+& & MINES & 5 \\
+& & MAX STEPS & SIZE X*SIZE Y\\
+& & MEMORY SIZE & 50000 \\
+& & STARTUP GAMES & X*Y \\
+& & TEST EPISODES & 5000 \\
+& & TRAIN EPISODES & 400000 \\
+& & steps & 15\\\cline{2-4}
+& \multirow{2}{*}{model} & epsilon & 0.1\\
+& & learning & 0.01 \\\cline{2-4}
+& \multirow{2}{*}{rewards} & penalty &-20\\
+& & reward& 1\\\cline{2-4}
+& \multirow{3}{*}{results} & win & 0.0006\\
+& & lose &0.2102\\
+& & stuck &0.7892\\
+\hline
+\hline
+\multirow{21}{*}{Figure 2} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.20\\
+& & MIN EPSILON	& 0.001 \\
+& & LAMBDA & 0.000009 \\
+& & KEEP PROB & 0.8 \\
+& & GAMMA	& 0.95 \\
+& & SIZE X & 5 \\
+& & SIZE Y & 5 \\
+& & MINES & 5 \\
+& & MAX STEPS & SIZE X*SIZE Y\\
+& & MEMORY SIZE & 50000 \\
+& & STARTUP GAMES & X*Y \\
+& & TEST EPISODES & 5000 \\
+& & TRAIN EPISODES & 400000 \\
+& & steps & 15\\\cline{2-4}
+& \multirow{2}{*}{model} & epsilon & 0.1\\
+& & learning & default \\\cline{2-4}
+& \multirow{2}{*}{rewards} & penalty	&-20\\
+& & reward& 1\\\cline{2-4}
+& \multirow{3}{*}{results} & win & 0.3172\\
+& & lose & 0.67\\
+& & stuck & 0.0128\\
+\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l|r|X|r}
+	Name & Datei & Variable & Wert\\
+\hline
+\multirow{21}{*}{Figure 3} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.20\\
+& & MIN EPSILON	& 0.001 \\
+& & LAMBDA & 0.000009 \\
+& & KEEP PROB & 0.8 \\
+& & GAMMA	& 0.95 \\
+& & SIZE X & 5 \\
+& & SIZE Y & 5 \\
+& & MINES & 5 \\
+& & MAX STEPS & SIZE X*SIZE Y\\
+& & MEMORY SIZE & 50000 \\
+& & STARTUP GAMES & X*Y \\
+& & TEST EPISODES & 5000 \\
+& & TRAIN EPISODES & 900000 \\
+& & steps & 15\\\cline{2-4}
+& \multirow{2}{*}{model} & epsilon & 0.1\\
+& & learning & default \\\cline{2-4}
+& \multirow{2}{*}{rewards} & penalty	&-20\\
+& & reward& 1\\\cline{2-4}
+& \multirow{3}{*}{results} & win & 0.4102\\
+& & lose & 0.5756\\
+& & stuck & 0.0142\\
+\hline
+\hline
+\multirow{21}{*}{Figure 4} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.20\\
+& & MIN EPSILON	& 0.001 \\
+& & LAMBDA & 0.000009 \\
+& & KEEP PROB & 0.8 \\
+& & GAMMA	& 0.95 \\
+& & SIZE X & 5 \\
+& & SIZE Y & 5 \\
+& & MINES & 5 \\
+& & MAX STEPS & SIZE X*SIZE Y-3\\
+& & MEMORY SIZE & 50000 \\
+& & STARTUP GAMES & X*Y \\
+& & TEST EPISODES & 5000 \\
+& & TRAIN EPISODES & 800000 \\
+& & steps & 15\\\cline{2-4}
+& \multirow{2}{*}{model} & epsilon & 0.1\\
+& & learning & default \\\cline{2-4}
+& \multirow{2}{*}{rewards} & penalty	&-20\\
+& & reward& 1\\\cline{2-4}
+& \multirow{3}{*}{results} & win & 0.378\\
+& & lose & 0.609\\
+& & stuck & 0.013\\
+\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l|r|X|r}
+	Name & Datei & Variable & Wert \\
+	\hline
+	\multirow{21}{*}{Figure 5} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 5 \\
+	& & SIZE Y & 5 \\
+	& & MINES & 5 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & X*Y \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 400000 \\
+	& & steps & 15\\\cline{2-4}
+	& \multirow{2}{*}{model} & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward & 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 0.3606\\
+	& & lose & 0.6282\\
+	& & stuck & 0.00112\\
+	\hline
+%	\hline
+%	\multirow{21}{*}{Figure 6} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.20\\
+%	& & MIN EPSILON	& 0.001 \\
+%	& & LAMBDA & 0.000009 \\
+%	& & KEEP PROB & 0.8 \\
+%	& & GAMMA	& 0.95 \\
+%	& & SIZE X & 5 \\
+%	& & SIZE Y & 5 \\
+%	& & MINES & 5 \\
+%	& & MAX STEPS & SIZE X*SIZE Y\\
+%	& & MEMORY SIZE & 50000 \\
+%	& & STARTUP GAMES & X*Y \\
+%	& & TEST EPISODES & 5000 \\
+%	& & TRAIN EPISODES & 400000 \\
+%	& & steps & 15\\\cline{2-4}
+%	& \multirow{2}{*}{model} & epsilon & 0.1\\
+%	& & learning & default \\\cline{2-4}
+%	& \multirow{2}{*}{rewards} & penalty & -20\\
+%	& & reward& 1\\\cline{2-4}
+%	& \multirow{3}{*}{results} & win & 0 \\
+%	& & lose & 0 \\
+%	& & stuck & 0 \\
+%	\hline
+\end{tabularx}
+\end{document}
