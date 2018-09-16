@@ -25,9 +25,9 @@ class Model:
         self._keep_prob = tf.placeholder(tf.float32)
         # create a couple of fully connected hidden layers
         self._input = slim.flatten(self._states)
-        fc1 = tf.layers.dense(self._input, 60, activation=tf.nn.relu)
+        fc1 = tf.layers.dense(self._input, 100, activation=tf.nn.relu)
         do1 = tf.layers.dropout(fc1, self._keep_prob)
-        fc2 = tf.layers.dense(do1, 60, activation=tf.nn.relu)
+        fc2 = tf.layers.dense(do1, 100, activation=tf.nn.relu)
         do2 = tf.layers.dropout(fc2, self._keep_prob)
         self._logits = tf.layers.dense(do2, self._num_actions)
         loss = tf.losses.mean_squared_error(self._q_s_a, self._logits)

@@ -129,7 +129,7 @@ class GameRunner:
 
 MAX_EPSILON = 0.10
 MIN_EPSILON = 0.001
-LAMBDA = 0.000009
+LAMBDA = 0.000005
 KEEP_PROB = 0.8
 GAMMA = 0.95
 BATCH_SIZE = 750
@@ -143,7 +143,7 @@ MEMORY_SIZE = 50000
 STARTUP_GAMES = int(MEMORY_SIZE/MAX_STEPS)
 TEST_EPISODES = 5000
 
-TRAIN_EPISODES = 400000
+TRAIN_EPISODES = 2000000
 
 if __name__ == "__main__":
     env = Game(SIZE_Y, SIZE_X, MINES)
@@ -178,9 +178,29 @@ if __name__ == "__main__":
         print("Saving model...")
         saver.save(sess, "../tmp/model")
 
+        N = 5000
+
+        # Create win/lose/unfinished rates over the 5000 last training results
+        x_values = [0]
+        win_rate = [1/3]
+        lose_rate = [1/3]
+        unfinished_rate = [1/3]
+        for x in range(0, len(gr.result_store), N):
+            x_values.append(x+N)
+            last_results = gr.result_store[x:x+N]
+            win_rate.append(last_results.count(1)/N)
+            lose_rate.append(last_results.count(-1)/N)
+            unfinished_rate.append(last_results.count(0)/N)
+
         # Plot average reward per 100 games over time
-        plt.plot(np.convolve(gr.reward_store, np.ones((100,))/100, mode='valid'), 'b-', label='average over 100 games')
-        plt.plot(np.convolve(gr.reward_store, np.ones((5000,))/5000, mode='valid'), 'r-', label='average over 1000 games')
+        fig, (reward_plot, ratio_plot) = plt.subplots(2, 1, sharex=True)
+        reward_plot.plot(np.convolve(gr.reward_store, np.ones((100,)) / 100, mode='valid'), 'b-', label='average over 100 games')
+        reward_plot.plot(np.convolve(gr.reward_store, np.ones((5000,)) / 5000, mode='valid'), 'r-', label='average over 1000 games')
+        reward_plot.set_ylabel('Average reward')
+        ratio_plot.fill_between(np.asarray(x_values), 1 - np.asarray(win_rate), 1, facecolors='green')
+        ratio_plot.fill_between(np.asarray(x_values), 1 - np.asarray(win_rate), np.asarray(unfinished_rate), facecolors='red')
+        ratio_plot.fill_between(np.asarray(x_values), unfinished_rate, 0, facecolors='blue')
+        ratio_plot.set_ylabel('Win/Lose/Unfinished ratio')
         plt.show()
 
     # Testing

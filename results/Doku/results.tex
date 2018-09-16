@@ -71,7 +71,8 @@ Name & Datei & Variable & Wert \\
 & & TEST EPISODES & 5000 \\
 & & TRAIN EPISODES & 900000 \\
 & & steps & 15\\\cline{2-4}
-& \multirow{2}{*}{model} & epsilon & 0.1\\
+& \multirow{2}{*}{model} & neurons & 60/60 \\ 
+& & epsilon & 0.1\\
 & & learning & default \\\cline{2-4}
 & \multirow{2}{*}{rewards} & penalty	&-20\\
 & & reward& 1\\\cline{2-4}
@@ -94,7 +95,8 @@ Name & Datei & Variable & Wert \\
 & & TEST EPISODES & 5000 \\
 & & TRAIN EPISODES & 800000 \\
 & & steps & 15\\\cline{2-4}
-& \multirow{2}{*}{model} & epsilon & 0.1\\
+& \multirow{2}{*}{model} & neurons & 60/60 \\ 
+& & epsilon & 0.1\\
 & & learning & default \\\cline{2-4}
 & \multirow{2}{*}{rewards} & penalty	&-20\\
 & & reward& 1\\\cline{2-4}
@@ -121,7 +123,8 @@ Name & Datei & Variable & Wert \\
 	& & TEST EPISODES & 5000 \\
 	& & TRAIN EPISODES & 400000 \\
 	& & steps & 15\\\cline{2-4}
-	& \multirow{2}{*}{model} & epsilon & 0.1\\
+	& \multirow{2}{*}{model} & neurons & 60/60 \\ 
+	& & epsilon & 0.1\\
 	& & learning & default \\\cline{2-4}
 	& \multirow{2}{*}{rewards} & penalty & -20\\
 	& & reward & 1\\\cline{2-4}
@@ -129,28 +132,83 @@ Name & Datei & Variable & Wert \\
 	& & lose & 0.6282\\
 	& & stuck & 0.00112\\
 	\hline
-%	\hline
-%	\multirow{21}{*}{Figure 6} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.20\\
-%	& & MIN EPSILON	& 0.001 \\
-%	& & LAMBDA & 0.000009 \\
-%	& & KEEP PROB & 0.8 \\
-%	& & GAMMA	& 0.95 \\
-%	& & SIZE X & 5 \\
-%	& & SIZE Y & 5 \\
-%	& & MINES & 5 \\
-%	& & MAX STEPS & SIZE X*SIZE Y\\
-%	& & MEMORY SIZE & 50000 \\
-%	& & STARTUP GAMES & X*Y \\
-%	& & TEST EPISODES & 5000 \\
-%	& & TRAIN EPISODES & 400000 \\
-%	& & steps & 15\\\cline{2-4}
-%	& \multirow{2}{*}{model} & epsilon & 0.1\\
-%	& & learning & default \\\cline{2-4}
-%	& \multirow{2}{*}{rewards} & penalty & -20\\
-%	& & reward& 1\\\cline{2-4}
-%	& \multirow{3}{*}{results} & win & 0 \\
-%	& & lose & 0 \\
-%	& & stuck & 0 \\
-%	\hline
+	\hline
+	\multirow{21}{*}{Figure 6/7} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000009 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 5 \\
+	& & SIZE Y & 5 \\
+	& & MINES & 5 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & X*Y \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 1000000/2000000 \\
+	& & steps & 10\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 100/100 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward& 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 0.4348 \\
+	& & lose & 0.5576 \\
+	& & stuck & 0.0076 \\
+	\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l|r|X|r}
+	Name & Datei & Variable & Wert \\
+	\hline
+	\multirow{21}{*}{Figure 8} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 5 \\
+	& & SIZE Y & 5 \\
+	& & MINES & 5 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & X*Y \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 1000000 \\
+	& & BATCH SIZE & 750 \\
+	& & steps & 10\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 100/100 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward & 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 0.365\\
+	& & lose & 0.6306\\
+	& & stuck & 0.0044\\
+	\hline
+	\hline
+	\multirow{21}{*}{Figure 9} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 5 \\
+	& & SIZE Y & 5 \\
+	& & MINES & 5 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & X*Y \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 2000000 \\
+	& & BATCH SIZE & 750 \\
+	& & steps & 10\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 100/100 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward& 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 0.4248 \\
+	& & lose & 0.5684 \\
+	& & stuck & 0.0068 \\
+	\hline
 \end{tabularx}
 \end{document}
