@@ -47,6 +47,7 @@ e = 0.005
 # create lists to contain total rewards and steps per episode
 jList = []
 rList = []
+Result_store = []
 total_steps = 0
 
 # Make a path for our model to be saved in.
@@ -129,3 +130,14 @@ rMat = np.resize(np.array(rList),[len(rList)//100,100])
 rMean = np.average(rMat,1)
 plt.plot(rMean)
 plt.show()
+
+#win/lose/unfinished rates
+ls_rs = Result_store.append(game.won())
+cnt = 1
+while cnt <= num_episodes:
+    info_int = 200
+    if cnt % info_int == 0:
+        last_results = ls_rs[-info_int:]
+        print('Win/Lose/Unfinished rate: {}, {}, {}'.format(last_results.count(1)/info_int,
+                      last_results.count(-1)/info_int, last_results.count(0)/info_int))
+cnt += 1
