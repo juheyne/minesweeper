@@ -47,7 +47,7 @@ e = 0.005
 # create lists to contain total rewards and steps per episode
 jList = []
 rList = []
-Result_store = []
+result_store = []
 total_steps = 0
 
 # Make a path for our model to be saved in.
@@ -108,6 +108,7 @@ with tf.Session() as sess:
         myBuffer.add(episodeBuffer.buffer)
         jList.append(j)
         rList.append(rAll)
+        result_store.append(game.won())
         # Periodically display the game.
         if i % 500 == 0:
             print('Display game with moves')
@@ -119,25 +120,36 @@ with tf.Session() as sess:
 #         if i % 1000 == 0:
 #             saver.save(sess, path+'/model-'+str(i)+'.ckpt')
 #             print("Saved Model")
-        if len(rList) % 10 == 0:
-            print(total_steps, np.mean(rList[-100:]))
+        info_int = 200
+        if len(rList) % info_int == 0:
+            print(total_steps, np.mean(rList[-info_int:]))
+            last_results = result_store[-info_int:]
+            print('Win/Lose/Unfinished rate: {}, {}, {}'.format(last_results.count(1)/info_int,
+                          last_results.count(-1)/info_int, last_results.count(0)/info_int))
     saver.save(sess, path+'/model-'+str(i)+'.ckpt')
 print("Average reward per episodes: " + str(sum(rList)/num_episodes))
 
+N = 5000
+
+# Create win/lose/unfinished rates over the 5000 last training results
+x_values = [0]
+win_rate = [1/3]
+lose_rate = [1/3]
+unfinished_rate = [1/3]
+for x in range(0, len(gr.result_store), N):
+    x_values.append(x+N)
+    last_results = gr.result_store[x:x+N]
+    win_rate.append(last_results.count(1)/N)
+    lose_rate.append(last_results.count(-1)/N)
+    unfinished_rate.append(last_results.count(0)/N)
 
 # Plotting
-rMat = np.resize(np.array(rList),[len(rList)//100,100])
-rMean = np.average(rMat,1)
-plt.plot(rMean)
+fig, (reward_plot, ratio_plot) = plt.subplots(2, 1, sharex=True)
+reward_plot.plot(np.convolve(rList, np.ones((100,)) / 100, mode='valid'), 'b-', label='average over 100 games')
+reward_plot.plot(np.convolve(rList, np.ones((5000,)) / 5000, mode='valid'), 'r-', label='average over 1000 games')
+reward_plot.set_ylabel('Average reward')
+ratio_plot.fill_between(np.asarray(x_values), 1 - np.asarray(win_rate), 1, facecolors='green')
+ratio_plot.fill_between(np.asarray(x_values), 1 - np.asarray(win_rate), np.asarray(unfinished_rate), facecolors='red')
+ratio_plot.fill_between(np.asarray(x_values), unfinished_rate, 0, facecolors='blue')
+ratio_plot.set_ylabel('Win/Lose/Unfinished ratio')
 plt.show()
-
-#win/lose/unfinished rates
-ls_rs = Result_store.append(game.won())
-cnt = 1
-while cnt <= num_episodes:
-    info_int = 200
-    if cnt % info_int == 0:
-        last_results = ls_rs[-info_int:]
-        print('Win/Lose/Unfinished rate: {}, {}, {}'.format(last_results.count(1)/info_int,
-                      last_results.count(-1)/info_int, last_results.count(0)/info_int))
-cnt += 1
