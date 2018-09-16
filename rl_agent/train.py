@@ -14,15 +14,15 @@ print("Initialize training.")
 # Game parameters
 field_size = 5
 num_actions = field_size*field_size
-mines = 3
+mines = 5
 
 # Training parameters
 batch_size = 100  # How many experiences to use for each training step.
-update_freq = 5  # How often to perform a training step.
+update_freq = 10  # How often to perform a training step.
 y = .9  # Discount factor on the target Q-values
-num_episodes = 100000  # How many episodes of game environment to train network with.
+num_episodes = 400000  # How many episodes of game environment to train network with.
 pre_train_steps = 20000  # How many steps of random actions before training begins.
-max_epLength = 50  # The max allowed length of our episode.
+max_epLength = 25  # The max allowed length of our episode.
 load_model = False  # Whether to load a saved model.
 path = "../dqn"  # The path to save our model to.
 tau = 0.0001  # Rate to update target network toward primary network
@@ -110,19 +110,19 @@ with tf.Session() as sess:
         rList.append(rAll)
         result_store.append(game.won())
         # Periodically display the game.
-        if i % 500 == 0:
-            print('Display game with moves')
-            game.show_field()
-            print('Actions:')
-            print(actions)
-            print('Reward for this game: {}'.format(rAll))
+        # if i % 500 == 0:
+        #     print('Display game with moves')
+        #     game.show_field()
+        #     print('Actions:')
+        #     print(actions)
+        #     print('Reward for this game: {}'.format(rAll))
         # Periodically save the model.
 #         if i % 1000 == 0:
 #             saver.save(sess, path+'/model-'+str(i)+'.ckpt')
 #             print("Saved Model")
         info_int = 200
-        if len(rList) % info_int == 0:
-            print(total_steps, np.mean(rList[-info_int:]))
+        if i % info_int == 0:
+            print('Episode {}, Average reward {}'.format(i, np.mean(rList[-info_int:])))
             last_results = result_store[-info_int:]
             print('Win/Lose/Unfinished rate: {}, {}, {}'.format(last_results.count(1)/info_int,
                           last_results.count(-1)/info_int, last_results.count(0)/info_int))
@@ -136,9 +136,9 @@ x_values = [0]
 win_rate = [1/3]
 lose_rate = [1/3]
 unfinished_rate = [1/3]
-for x in range(0, len(gr.result_store), N):
+for x in range(0, len(result_store), N):
     x_values.append(x+N)
-    last_results = gr.result_store[x:x+N]
+    last_results = result_store[x:x+N]
     win_rate.append(last_results.count(1)/N)
     lose_rate.append(last_results.count(-1)/N)
     unfinished_rate.append(last_results.count(0)/N)
