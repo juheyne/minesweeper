@@ -1,0 +1,1 @@
+Number of episodes 400,000First Kernel Size - Number of Outputs[3,3] - 25Second Kernel Size - Number of Outputs[2,2] - 50Third Kernel Size - Number of Outputs[1,1] - 100Rewarding Policy : Unopened, Mine, Flag, Opended-3, -1, -2 , 0Penalty of Useless action-20Win/ Lose/ Unfinished Rate00.0, 0.2, 0.8We have only less unfinished games.
