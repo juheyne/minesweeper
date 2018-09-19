@@ -1,19 +1,20 @@
 \chapter{Deep-Reinforcement Learning}
-Our first attempt to solve the problem of a neural network playing minesweeper is with deep--reinforcement learning. 
-%TODO cite
-had promising results that were tried to achieve for the minesweeper game.
-In this chapter we first want to get into the basics of deep--reinforcement learning then we describe how we applied for our setting later we discuss the results and the problems.
+Our first attempt to solve the problem of a neural network playing minesweeper is with deep--reinforcement learning.
+Techniques able to learn Atari games~\cite{mnih2013playing} with a high input complexity should be able to learn and play `simpler' games like Minesweeper.
+First we introduce the concept of Reinforcement learning with the addition of Deep Reinforcement Learning.
+Afterwards we present our approach, followed by our results and the problems we encountered.
 
 \section{Background}
-We view the minesweeper grid as a environment $\mathcal{E}$ in which an agent interacts. 
-The Environment can be regarded as a sequence of actions, states and rewards.
-At every time--step the agent selects an legal action $a_t$ from a set of legal game actions. 
-The goal of the agent is to maximize the future reward by selecting actions $a_t$. The future reward
+Reinforcement learning is used to learn an optimal policy for an agent in an environment by exploring the environment and getting rewards based on its performance.
+The environment $\mathcal{E}$ can be regarded as a sequence of actions, states and rewards.
+At every time--step the agent selects a legal action $a_t$ from a set of legal game actions. 
+The goal of the agent is to maximize the future reward.
+We use as the future reward, the standard future discounted reward
 \begin{equation}
 R_t := \sum_{t'=t}^T \gamma^{t'-t}r_{t'},
 \end{equation}
-where $\gamma$ is a discount factor per time--step, $r_t$ represents the chant in the game score and $T$ is the time--step at which the game is terminated.
-The optimal action--value function $Q^*\left(s,a\right)$ is defined as the maximum expected return that will be returned by the following strategy:
+where $\gamma$ is a discount factor per time--step, $r_t$ represents the change in the game score and $T$ is the time--step at which the game is terminated.
+The optimal action--value function $Q^*\left(s,a\right)$ is defined as the maximum expected return that will be returned by following any strategy:
 \begin{equation}
 Q^*\left(s,a\right):= \max_\pi \mathbb{E} \left[ R_t|s_t=s\text{, }a_t=a\text{, } \pi\right]
 \end{equation}
@@ -30,6 +31,12 @@ With the Bellman equation the basic idea of reinforcement learning is introduced
 Q_{i+1}\left(s,a\right)= \mathbb{E}\left[r+\gamma \max_{a'} Q_i\left(s,a\right)| s,a\right],
 \end{equation} 
 where we assume that the value iteration algorithm converges to the optimal action--value function, i.e. $Q_i \rightarrow Q^*\text{, for } i \rightarrow \infty$.
+
+For easy problems with small dimensions for the possible state--action space the Q--function can easily be saved in a table.
+This table is updated while learning and represents the Q--function for each possible pair.
+The state space for Minesweeper is incredibly large, thus a direct representation as a table does not work.
+Neural networks can be used to encode a Q--function in a compact way.
+
 For a neural network we need a non--linear approximation, where $\theta$ are the weights of the Q--network.
 The Q--network is trained to minimize a sequence of loss functions $L_i\left(\theta_i\right)$, which changes in every iteration $i$,
 \begin{equation}
@@ -39,23 +46,29 @@ where $yi$ is the target at the $i-th$ iteration,
 \begin{equation}
 y_i = \mathbb{E}_{s'\sim \mathcal{E}}\left[ r+ \gamma \max_{a'} Q\left( s',a'; \theta_{i-1}\right)| s,a\right],
 \end{equation}
-and $\rho\left(s,a\right)$ is a probability distribution over the sequences $s$ and actions$a$, that is also called the behaviour distribution.
-To optimize the loss function $L_i\left(\theta_i\right)$ the parameters from the previous iteration $\theta_{i-1}$ are held fix. 
+and $\rho\left(s,a\right)$ is a probability distribution over the sequences $s$ and actions $a$, that is also called the behavior distribution.
+To optimize the loss function $L_i\left(\theta_i\right)$ the parameters from the previous iteration $\theta_{i-1}$ are held fixed. 
 Therefore, the target depends on the weights of the network. 
 So to optimize we differentiate the loss function with respect to the weights and get the gradient,
 \begin{equation}
 \nabla_{\theta_i} L_i\left(\theta_i\right)= \mathbb{E}_{s,a\sim\rho\left(\cdot\right);s'\sim \mathcal{E}} \left[ \left( r + \gamma \max_{a'}Q\left(s',a';\theta_{i-1}\right) -Q\left(s,a;\theta_i\right) \right)\nabla_{\theta_i}Q\left(s,a;\theta_i\right)\right].
 \end{equation}
-Instead of calculating the expectation the loss function is optimized by stochastic gradient descent. 
-We get the Q--learning algorithm if the weights are updated after every step and the expectation is replaced by samples form $\rho$ and $\mathcal{E}$ respectively.
+Instead of calculating the expectation the loss function is optimized by stochastic gradient descent.
+We get the Q--learning algorithm if the weights are updated after every step and the expectation is replaced by samples from $\rho$ and $\mathcal{E}$ respectively.
 
-If an agent interacts with an game that has the same start and interacts with the same actions it is very likely, that each time the results will be the same. 
-Therefore, we talk about highly correlated games and it is logical to introduce some kind of memory. 
-This memory should contain the state, reward, action and the new state. 
-One advantage is that the memory can be sampled in batches randomly which can lead to a lower risk of over--fitting.
-Though the steps now are taken from the randomized memory rather than from the agents ordered steps through the game.
+In contrast to supervised learning the target function depends on the weights of the network.
+As the states of a game are highly correlated the basic assumption that the data used for learning is independent of each other does not hold.
+Thus a memory is introduced which is filled continuously while playing and sampled randomly for learning.
+This removes the correlation between game states as much as possible.
+The memory contains the state, its reward, action and the next state.
+This reduces overfitting which would occur if the network is directly learned while playing.
+
+As a policy we use $\epsilon$--greedy which takes a random action with the probability $\epsilon$ and otherwise takes the optimal action from the neural network.
 
 \section{Our approach}
+We view the Minesweeper grid as an environment $\mathcal{E}$ in which an agent interacts. 
+
+% Adam Optimizer
 
 \section{Results}
 
