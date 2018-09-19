@@ -1,0 +1,34 @@
+\chapter{Deep-Reinforcement Learning}
+Our fist attempt to solve the problem of a neural network playing minesweeper is with deep--reinforcement learning. 
+%TODO cite
+had promising results that were tried to achieve for the minesweeper game.
+In this chapter we first want to get into the basics of deep--reinforcement learning then we describe how we applied for our setting later we discuss the results and the problems.
+
+\section{Background}
+We view the minesweeper grid as an environment $\mathcal{E}$ in which an agent interacts. 
+The Environment can be regarded as an sequence of actions, states and rewards.
+At every time--step the agent selects an legal action $a_t$ from a set of legal game actions. 
+The goal of the agent is to maximize the future reward by selecting actions $a_t$. The future reward
+\begin{equation}
+R_t := \sum_{t'=t}^T \gamma^{t'-t}r_{t'},
+\end{equation}
+where $\gamma$ is a discount factor per time--step, $r_t$ represents the chant in the game score and $T$ is the time--step at which the game is terminated.
+The optimal action--value function $Q^*\left(s,a\right)$ is defined as the maximum expected return that will be returned by the following strategy:
+\begin{equation}
+Q^*\left(s,a\right):= \max_\pi \mathbb{E} \left[ R_t|s_t=s\text{, }a_t=a\text{, } \pi\right]
+\end{equation}
+where $s$ is some sequence and $\pi$ is a policy mapping sequences to actions.
+%TODO belmann intuition erklären??
+The optimal action--value function is gained with the Bellman equation by maximizing the expected value of $r+\gamma Q^*\left(s',a'\right),$
+\begin{equation}
+Q^*\left(s,q\right)= \mathbb{E}_{s'~\mathcal{E}} \left[ r + \gamma \max_{a'} Q^*\left(s',a'\right)| s,a \right],
+\end{equation}
+where $Q^*\left(s,a\right)$ is the sequence $s'$ at the next time--step for all possible actions $a'$. The value is maximized by selecting the optimal action $a'$.
+
+
+
+\section{Our approach}
+
+\section{Results}
+
+\section{Problems}
