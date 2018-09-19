@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[9pt]{article}
 %\usepackage{graphicx}
 \usepackage{tabularx}
 \usepackage{array,multirow}
@@ -17,7 +17,7 @@ Name & Datei & Variable & Wert \\
 & & MINES & 5 \\
 & & MAX STEPS & SIZE X*SIZE Y\\
 & & MEMORY SIZE & 50000 \\
-& & STARTUP GAMES & X*Y \\
+& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
 & & TEST EPISODES & 5000 \\
 & & TRAIN EPISODES & 400000 \\
 & & steps & 15\\\cline{2-4}
@@ -40,7 +40,7 @@ Name & Datei & Variable & Wert \\
 & & MINES & 5 \\
 & & MAX STEPS & SIZE X*SIZE Y\\
 & & MEMORY SIZE & 50000 \\
-& & STARTUP GAMES & X*Y \\
+& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
 & & TEST EPISODES & 5000 \\
 & & TRAIN EPISODES & 400000 \\
 & & steps & 15\\\cline{2-4}
@@ -66,8 +66,8 @@ Name & Datei & Variable & Wert \\
 & & SIZE Y & 5 \\
 & & MINES & 5 \\
 & & MAX STEPS & SIZE X*SIZE Y\\
-& & MEMORY SIZE & 50000 \\
-& & STARTUP GAMES & X*Y \\
+& & MEM SIZE & 50000 \\
+& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
 & & TEST EPISODES & 5000 \\
 & & TRAIN EPISODES & 900000 \\
 & & steps & 15\\\cline{2-4}
@@ -91,7 +91,7 @@ Name & Datei & Variable & Wert \\
 & & MINES & 5 \\
 & & MAX STEPS & SIZE X*SIZE Y-3\\
 & & MEMORY SIZE & 50000 \\
-& & STARTUP GAMES & X*Y \\
+& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
 & & TEST EPISODES & 5000 \\
 & & TRAIN EPISODES & 800000 \\
 & & steps & 15\\\cline{2-4}
@@ -119,7 +119,7 @@ Name & Datei & Variable & Wert \\
 	& & MINES & 5 \\
 	& & MAX STEPS & SIZE X*SIZE Y\\
 	& & MEMORY SIZE & 50000 \\
-	& & STARTUP GAMES & X*Y \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
 	& & TEST EPISODES & 5000 \\
 	& & TRAIN EPISODES & 400000 \\
 	& & steps & 15\\\cline{2-4}
@@ -143,7 +143,7 @@ Name & Datei & Variable & Wert \\
 	& & MINES & 5 \\
 	& & MAX STEPS & SIZE X*SIZE Y\\
 	& & MEMORY SIZE & 50000 \\
-	& & STARTUP GAMES & X*Y \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
 	& & TEST EPISODES & 5000 \\
 	& & TRAIN EPISODES & 1000000/2000000 \\
 	& & steps & 10\\\cline{2-4}
@@ -171,7 +171,7 @@ Name & Datei & Variable & Wert \\
 	& & MINES & 5 \\
 	& & MAX STEPS & SIZE X*SIZE Y\\
 	& & MEMORY SIZE & 50000 \\
-	& & STARTUP GAMES & X*Y \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
 	& & TEST EPISODES & 5000 \\
 	& & TRAIN EPISODES & 1000000 \\
 	& & BATCH SIZE & 750 \\
@@ -196,7 +196,7 @@ Name & Datei & Variable & Wert \\
 	& & MINES & 5 \\
 	& & MAX STEPS & SIZE X*SIZE Y\\
 	& & MEMORY SIZE & 50000 \\
-	& & STARTUP GAMES & X*Y \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
 	& & TEST EPISODES & 5000 \\
 	& & TRAIN EPISODES & 2000000 \\
 	& & BATCH SIZE & 750 \\
@@ -209,6 +209,281 @@ Name & Datei & Variable & Wert \\
 	& \multirow{3}{*}{results} & win & 0.4248 \\
 	& & lose & 0.5684 \\
 	& & stuck & 0.0068 \\
+	\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l|r|X|r}
+	Name & Datei & Variable & Wert \\
+	\hline
+	\multirow{21}{*}{Figure 8} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 5 \\
+	& & SIZE Y & 5 \\
+	& & MINES & 5 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 2000000 \\
+	& & BATCH SIZE & 750 \\
+	& & steps & 10\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 100/100 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -10\\
+	& & reward & 2\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 0.4024\\
+	& & lose & 0.5806\\
+	& & stuck & 0.017\\
+	\hline
+	\hline
+	\multirow{21}{*}{Figure 10} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 5 \\
+	& & SIZE Y & 5 \\
+	& & MINES & 5 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 1000000 \\
+	& & BATCH SIZE & 750 \\
+	& & steps & 10\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 100 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward& 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 0.0654 \\
+	& & lose & 0.932 \\
+	& & stuck & 0.0026 \\
+	\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l|r|X|r}
+	Name & Datei & Variable & Wert \\
+	\hline
+	\multirow{21}{*}{Figure 11} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 5 \\
+	& & SIZE Y & 5 \\
+	& & MINES & 5 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 1000000 \\
+	& & BATCH SIZE & 750 \\
+	& & steps & 10\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 50/50/50 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward & 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 0.2542\\
+	& & lose & 0.733\\
+	& & stuck & 0.0128\\
+	\hline
+	\hline
+	\multirow{21}{*}{Figure 12} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 5 \\
+	& & SIZE Y & 5 \\
+	& & MINES & 5 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 1000000 \\
+	& & BATCH SIZE & 750 \\
+	& & steps & 10\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 100/50 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward& 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 0.3532 \\
+	& & lose & 0.6406 \\
+	& & stuck & 0.0062 \\
+	\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l|r|X|r}
+	Name & Datei & Variable & Wert \\
+	\hline
+	\multirow{21}{*}{Figure 13} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 4 \\
+	& & SIZE Y & 4 \\
+	& & MINES & 4 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 2000000 \\
+	& & BATCH SIZE & 750 \\
+	& & steps & 10\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 50/50 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward & 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 0.441\\
+	& & lose & 0.5558\\
+	& & stuck & 0.0032\\
+	\hline
+	\hline
+	\multirow{21}{*}{Figure 14} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 4 \\
+	& & SIZE Y & 4 \\
+	& & MINES & 2 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 1000000 \\
+	& & BATCH SIZE & 750 \\
+	& & steps & 10\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 100/50 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward& 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 0.808 \\
+	& & lose & 0.192 \\
+	& & stuck & 0.0 \\
+	\hline
+\end{tabularx}
+
+From here on, games are ignored that were lost at the first move.
+Thus we have higher win rates as mines/size loses are omitted.
+
+\begin{tabularx}{\textwidth}{l|r|X|r}
+	Name & Datei & Variable & Wert \\
+	\hline
+	\multirow{21}{*}{Figure 15} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 5 \\
+	& & SIZE Y & 5 \\
+	& & MINES & 5 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 1000000 \\
+	& & BATCH SIZE & 150 \\
+	& & steps & 10\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 50/50 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward & 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 20.72\%\\
+	& & lose & 78.58\%\\
+	& & stuck & 0.70\%\\
+	\hline
+	\hline
+	\multirow{21}{*}{Figure 16} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 5 \\
+	& & SIZE Y & 5 \\
+	& & MINES & 5 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 2000000 \\
+	& & BATCH SIZE & 75 \\
+	& & steps & 1\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 50/50 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward& 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 47.78\% \\
+	& & lose & 48.30\% \\
+	& & stuck & 3.92\% \\
+	\hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{l|r|X|r}
+	Name & Datei & Variable & Wert \\
+	\hline
+	\multicolumn{4}{l}{Changed encoding of unopenend fields from -3 to 9} \\
+	\multirow{21}{*}{Figure 17} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 5 \\
+	& & SIZE Y & 5 \\
+	& & MINES & 5 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 1000000 \\
+	& & BATCH SIZE & 75 \\
+	& & steps & 10\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 50/50 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward & 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 17.96\%\\
+	& & lose & 74.51\%\\
+	& & stuck & 7.53\%\\
+	\hline
+	\hline
+	\multicolumn{4}{l}{Removed second input layer containing visited states} \\
+	\multirow{21}{*}{Figure 18} & \multirow{14}{*}{gamerunner} & MAX EPSILON	& 0.10\\
+	& & MIN EPSILON	& 0.001 \\
+	& & LAMBDA & 0.000005 \\
+	& & KEEP PROB & 0.8 \\
+	& & GAMMA	& 0.95 \\
+	& & SIZE X & 5 \\
+	& & SIZE Y & 5 \\
+	& & MINES & 5 \\
+	& & MAX STEPS & SIZE X*SIZE Y\\
+	& & MEMORY SIZE & 50000 \\
+	& & STARTUP GAMES & MEMSIZE/MAXSTEPS \\
+	& & TEST EPISODES & 5000 \\
+	& & TRAIN EPISODES & 2000000 \\
+	& & BATCH SIZE & 75 \\
+	& & steps & 1\\\cline{2-4}
+	& \multirow{2}{*}{model} & neurons & 50/50 \\ 
+	& & epsilon & 0.1\\
+	& & learning & default \\\cline{2-4}
+	& \multirow{2}{*}{rewards} & penalty & -20\\
+	& & reward& 1\\\cline{2-4}
+	& \multirow{3}{*}{results} & win & 42.80\% \\
+	& & lose & 51.51\% \\
+	& & stuck & 5.70\% \\
 	\hline
 \end{tabularx}
 \end{document}

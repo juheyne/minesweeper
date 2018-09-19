@@ -9,9 +9,9 @@ import numpy as np
 class Game:
     """Class containing a playable Minesweeper game."""
 
-    _UNOPENED = -3
-    _MINE = -1
-    _FLAG = -2
+    _UNOPENED = -1
+    _MINE = -2
+    _FLAG = -3
     _OPENED = 0
 
     def __init__(self, size_y, size_x, mine_count):
@@ -102,7 +102,7 @@ class Game:
 
     def state(self):
         """Return current state of the game."""
-        return np.copy(self._overlay)
+        return np.copy(self._overlay)[:, :, 0]
 
     def won(self):
         """Return -1, 0 or 1 if the game is lost, undecided or won."""
