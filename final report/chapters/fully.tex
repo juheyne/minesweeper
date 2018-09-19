@@ -1,6 +1,15 @@
 \chapter{Fully connected layers}
+As discussed above the deep--reinforcement learning had many problems an did not provide the results that are tried to achieve in the scope of this work.
+Therefore, other methods were considered one of the more promising ones is the %TODO insert name :P
 
 \section{Background}
+If an agent interacts with an game that has the same start and interacts with the same actions it is very likely, that each time the results will be the same. 
+Therefore, we talk about highly correlated games and it is logical to introduce some kind of memory. 
+This memory should contain the state, reward, action and the new state. 
+One advantage is that the memory can be sampled in batches randomly which can lead to a lower risk of over--fitting.
+
+Like in the deep Q-network the network the fully connected network can be trained every step. 
+Though the steps now are taken from the randomized memory rather than from the agents ordered steps through the game.
 
 \section{Our approach}
 

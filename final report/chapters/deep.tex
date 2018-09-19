@@ -49,6 +49,12 @@ So to optimize we differentiate the loss function with respect to the weights an
 Instead of calculating the expectation the loss function is optimized by stochastic gradient descent. 
 We get the Q--learning algorithm if the weights are updated after every step and the expectation is replaced by samples form $\rho$ and $\mathcal{E}$ respectively.
 
+If an agent interacts with an game that has the same start and interacts with the same actions it is very likely, that each time the results will be the same. 
+Therefore, we talk about highly correlated games and it is logical to introduce some kind of memory. 
+This memory should contain the state, reward, action and the new state. 
+One advantage is that the memory can be sampled in batches randomly which can lead to a lower risk of over--fitting.
+Though the steps now are taken from the randomized memory rather than from the agents ordered steps through the game.
+
 \section{Our approach}
 
 \section{Results}
