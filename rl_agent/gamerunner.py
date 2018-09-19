@@ -28,6 +28,7 @@ class GameRunner:
         self._steps = 0
         self._reward_store = []
         self._result_store = []
+        self._steps_store = []
 
     def startup(self, n_pre_games):
         for x in range(n_pre_games):
@@ -60,10 +61,10 @@ class GameRunner:
             if done:
                 next_state = None
 
-            self._memory.add_sample((state, action, reward, next_state))
+            if not (done and steps == 0):
+                self._memory.add_sample((state, action, reward, next_state))
 
-            if self._steps % 10 == 0:
-                self._replay()
+            self._replay()
 
             # exponentially decay the eps value
             steps += 1
@@ -78,6 +79,7 @@ class GameRunner:
             if done or steps > self._max_steps:
                 self._reward_store.append(tot_reward)
                 self._result_store.append(self._env.won())
+                self._steps_store.append(steps)
                 break
 
         # print("Steps {}, Total reward: {}, Eps: {}".format(self._steps, tot_reward, self._eps))
@@ -126,13 +128,17 @@ class GameRunner:
     def result_store(self):
         return self._result_store
 
+    @property
+    def steps_store(self):
+        return self._steps_store
+
 
 MAX_EPSILON = 0.10
 MIN_EPSILON = 0.001
 LAMBDA = 0.000005
 KEEP_PROB = 0.8
 GAMMA = 0.95
-BATCH_SIZE = 750
+BATCH_SIZE = 75
 
 SIZE_X = 5
 SIZE_Y = 5
@@ -143,7 +149,7 @@ MEMORY_SIZE = 50000
 STARTUP_GAMES = int(MEMORY_SIZE/MAX_STEPS)
 TEST_EPISODES = 5000
 
-TRAIN_EPISODES = 2000000
+TRAIN_EPISODES = 1000000
 
 if __name__ == "__main__":
     env = Game(SIZE_Y, SIZE_X, MINES)
@@ -167,10 +173,22 @@ if __name__ == "__main__":
             if cnt % information_interval == 0:
                 last_rewards = gr.reward_store[-information_interval:]
                 last_results = gr.result_store[-information_interval:]
+                last_steps = gr.steps_store[-information_interval:]
+                clean_rewards = []
+                clean_results = []
+                clean_steps = []
+                for rew, res, steps in zip(last_rewards, last_results, last_steps):
+                    if not (res == -1 and steps == 1):
+                        clean_rewards.append(rew)
+                        clean_results.append(res)
+                        clean_steps.append(steps)
+
                 print('Episode {} of {}'.format(cnt, TRAIN_EPISODES))
-                print('Average reward: {}, eps: {}'.format(np.mean(last_rewards), gr.eps))
-                print('Win/Lose/Unfinished rate: {}, {}, {}'.format(last_results.count(1)/information_interval,
-                      last_results.count(-1)/information_interval, last_results.count(0)/information_interval))
+                print('Avg reward: {:.4f}, eps: {}'.format(np.mean(clean_rewards), gr.eps))
+                print('avg steps: {:.4f}, min steps for win: {}'.format(np.mean(clean_steps), min(np.asarray(clean_steps)[np.where(np.asarray(clean_results) == 1)[0]], default=-1)))
+                print('Win/Lose/Unfinished rate: {:.2%}, {:.2%}, {:.2%}'.format(clean_results.count(1)/len(clean_results),
+                                                                                clean_results.count(-1)/len(clean_results),
+                                                                                clean_results.count(0)/len(clean_results)))
             gr.run()
             cnt += 1
 
@@ -236,8 +254,19 @@ if __name__ == "__main__":
                     test_results.append(env.won())
                     break
 
+        clean_test_rewards = []
+        clean_test_results = []
+        clean_test_steps = []
+        for rew, res, steps in zip(test_reward, test_results, test_steps):
+            if not(res == -1 and steps == 1):
+                clean_test_rewards.append(rew)
+                clean_test_results.append(res)
+                clean_test_steps.append(steps)
+
         print("Test Results:")
-        print("Average reward: {}".format(np.mean(test_reward)))
-        print("Win rate: {}".format(test_results.count(1)/TEST_EPISODES))
-        print("Lose rate: {}".format(test_results.count(-1)/TEST_EPISODES))
-        print("Stuck games rate: {}".format((test_results.count(0)/TEST_EPISODES)))
+        print("Average reward: {}".format(np.mean(clean_test_rewards)))
+        print("Average steps: {}, Minimum steps: {}".format(np.mean(clean_test_steps), min(np.asarray(clean_test_steps)[np.where(np.asarray(clean_test_results) == 1)[0]], default=-1)))
+        print("Win rate: {:.2%}".format(clean_test_results.count(1)/len(clean_test_results)))
+        print("Lose rate: {:.2%}".format(clean_test_results.count(-1)/len(clean_test_results)))
+        print("Stuck games rate: {:.2%}".format((clean_test_results.count(0)/len(clean_test_results))))
+        print("Lost games at first move: {:.2%}".format((TEST_EPISODES-len(clean_test_results))/TEST_EPISODES))

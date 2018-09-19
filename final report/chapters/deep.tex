@@ -66,10 +66,43 @@ This reduces overfitting which would occur if the network is directly learned wh
 As a policy we use $\epsilon$--greedy which takes a random action with the probability $\epsilon$ and otherwise takes the optimal action from the neural network.
 
 \section{Our approach}
-We view the Minesweeper grid as an environment $\mathcal{E}$ in which an agent interacts. 
+The environment is the the minesweeper field represented as an integer array.
+An unvisited field is represented through $-1$ and $0$ to $8$ represent the number of adjacent mines.
+The number of possible actions is equal to the size of the field and its encoding is the linear index of the two--dimensional array.
+For the field size $8 \times 8$ we have 64 possible actions.
+If the agent takes action $8$, the field $(1, 0)$ would be opened.
 
-% Adam Optimizer
+The main problem with Minesweeper compared to for example the Atari games is that the input dimension can change.
+A `beginner' game is $8 \times 8$ with $10$ mines, whereas an `advanced' game is $16 \times 16$ with $40$ mines.
+This is a big problem as the network needs to be resized and retrained for each size.
+For the first try we restrict ourselves to the `beginner' size.
+
+The first thing we noticed is the problem of our input size.
+For example the Atari games are $84 \times 84$, whereas our input is $8 \times 8$.
+With this small input a `deep' network is just not possible as each layer decreases the input size if you do not add padding.
+Padding would create a whole different kind of problem for the encoding.
+Thus we could only use a small amount of convolution layers to not destroy any positional information in the input data.
+We tried several different architectures, but the results were pretty underwhelming.
+The agent was prone to get stuck and it learned to perform worse than a random agent.
+The reason for this bad performance is the overestimation of Q--values due to the network.
+While a evenly distributed overestimation would not be harmful for the training process, an overestimation in a subset of suboptimal actions results impairs the learning of the optimal policy.
+This results in feedback loops leading to a stuck training process, as the suboptimal action is taken over and over again.
+
+To improve the stability of the network during training a separate target network can be used.
+This type of Reinforcement Learning is called Double Q--Learning~\cite{HasseltGS15}.
+Instead of updating it every few steps, we update $\theta'$, the weights from the target network, slowly every step by trailing the weights $\theta$ from the main network with a factor $\tau$~\cite{lillicrap2015continuous}.
+\begin{equation}
+	\theta' \leftarrow \tau\theta + (1-\tau)\theta' \text{ with } \tau \ll 1
+\end{equation}
+This results in a more stable training.
+To reduce the overestimating of the Q--values, the estimation of the Q--value is decoupled from the action choice.
+The primary network network chooses the action and the Q--value from the target, more stable, network is used.
+\begin{equation}
+	Q'(s, a) = r + \gamma Q(s', \arg\max_a(Q(s', a, \theta), \theta')) 
+\end{equation}
+This improves the stability of the training.
 
 \section{Results}
+
 
 \section{Problems}
