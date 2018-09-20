@@ -60,7 +60,7 @@ In contrast to supervised learning the target function depends on the weights of
 As the states of a game are highly correlated the basic assumption that the data used for learning is independent of each other does not hold.
 Thus a memory is introduced which is filled continuously while playing and sampled randomly for learning.
 This removes the correlation between game states as much as possible.
-The memory contains the state, its reward, action and the next state.
+The memory contains the state, its reward, action, and the next state.
 This reduces overfitting which would occur if the network is directly learned while playing.
 
 As a policy we use $\epsilon$--greedy which takes a random action with the probability $\epsilon$ and otherwise takes the optimal action from the neural network.
@@ -69,8 +69,11 @@ As a policy we use $\epsilon$--greedy which takes a random action with the proba
 The environment is the the minesweeper field represented as an integer array.
 An unvisited field is represented through $-1$ and $0$ to $8$ represent the number of adjacent mines.
 The number of possible actions is equal to the size of the field and its encoding is the linear index of the two--dimensional array.
-For the field size $8 \times 8$ we have 64 possible actions.
+For the field size $8 \times 8$ we have 64 actions to open a field and 64 actions to flag or unflag a field (if it is already flagged).
 If the agent takes action $8$, the field $(1, 0)$ would be opened.
+Taking the action $8+64$, the field $(1, 0)$ would be flagged.
+
+The Deep Q--network is defined in python in the framework tensorflow~\cite{tensorflow2015-whitepaper} and our code is oriented on a tutorial for Deep Q--networks~\cite{SimpleReLe}.
 
 The main problem with Minesweeper compared to for example the Atari games is that the input dimension can change.
 A `beginner' game is $8 \times 8$ with $10$ mines, whereas an `advanced' game is $16 \times 16$ with $40$ mines.
@@ -103,6 +106,59 @@ The primary network network chooses the action and the Q--value from the target,
 This improves the stability of the training.
 
 \section{Results}
+As stated above we started with a `beginner' sized field $8 \times 8$.
+To test the ability of our network to learn anything we started with one mine at a fixed position.
+Figure~\ref{fig:fixed_mine} shows the average reward over a $100$ games each.
+The reward for winning a game is $100$, which is the average reward after about a $1000$ played games.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{images/fixed_mine_position.png}
+	\caption{Plot for the average reward during training with a fixed mine. The size is $8 \times 8$ and the agent learns to open the field and after that flags the mine. As can be seen, the agent learns it for the fixed mine.}
+	\label{fig:fixed_mine}
+\end{figure}
+
+To increase the difficulty we randomized the position of the fixed mine.
+Unfortunately the network was unable to flag the mine after it opened the first field.
+The average reward of an exemplary game can be seen in Figure~\ref{fig:random_mine}.
+The increase in average reward is due to the network minimizing its losses.
+It just flagged or unflagged the same field over and over again.
+At this moment we thought about the use of flags and came as already stated in the Introduction, that flagging as an action for a computer player does not make sense.
+A human can use flags to mark mines as a reminder but for winning the game only all none--mine fields need to be opened.
+To reduce the amount of possible actions for the agent we removed the flag actions, further reducing the possibility of unflagging/flagging a field forever.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{images/random_mine_position.png}
+	\caption{Plot for the average reward during training with a random mine. The size is $8 \times 8$ and the agent tries to learn to open any field and after that flags the mine. The agent gets stuck during learning.}
+	\label{fig:random_mine}
+\end{figure}
+
+The problem with removing the flagging option are the slightly different win conditions.
+Previously the agent could only win the game by opening all fields and flagging all mines.
+Without the flagging option the agent wins the game by opening all fields except the ones with mines beneath.
+With just one mine, the agent always wins the game except by opening the field with the mine beneath in the first move.
+
+To reduce the complexity of the agent and also reduce the time needed for simulations we reduced the size of the field to $5 \times 5$.
+This was the smallest we could get while still using convolution layers, that made at least some sense.
+Additionally we introduced the previously explained concept of Double Deep Q--networks to improve the training stability.
+
+The result of one of the runs can be seen in Figure~\ref*{fig:DDQN_still_unstable}.
+The negative reward from up to $-400$ stems from the changed reward policy.
+Opening an already opened field is penalized by a reward of $-20$.
+Winning, Losing and opening a field is rewarded with $100$, $-100$ and $1$ respectively.
+The second graph shows the percentage of wining, losing or not finishing a game.
+Games are aborted after a specific number of moves, in this case 25 to allow the agent to open every field and to take some useless actions.
+The $20\%$ lose rate is based on our game model, as the mines are already positioned before the first move.
+Thus the agent directly loses $\#mines/\#fields$ games at the first move.
+But even with the additional stability measures from the Double DQN the training gets stuck after about $100000$ episodes.
+We tried multiple parameter changes but even for a $5 \times 5$ field the computational time needed is immense.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{images/CNN-2nd-Plot.png}
+	\caption{Exemplary plot for the reward and win/lose/unfinished rates during training of a Double DQN. The $20\%$ lose rate is due to the agent hitting a mine on the first move. Unfortunately the training is still unstable.}
+	\label{fig:DDQN_still_unstable}
+\end{figure}
 
 
-\section{Problems}

@@ -1,7 +1,34 @@
-\chapter{Conclusion}
+\chapter{Conclusion and Future Work}
+
+Even though Minesweeper is for the most part a logical and arithmetic game which can be solved easily with heuristics, it is quite difficult to solve it with Reinforcement learning.
+Using naive Reinforcement learning is not possible due to the immense state space.
+In the following section our Deep Q--network approach and a fully connected approach are compared.
 
 \section{Comparison}
+Deep Q--networks and especially Double DQN are in theory superior compared to only fully connected networks.
+The convolution layers are able to learn compact feature representations while minimizing the amount of parameters, which need to learned.
+However it seems that for relatively small problems, which are already rather compact in their representation the additional overhead and feature generation seems to be inferior in these specific cases.
 
+The fully connected networks showed a much better training progress and better computational performance.
+Especially with small computational resources the smaller amount of parameters allowed easier prototyping.
+
+For bigger input spaces the convolution layers are better than fully connected layers as they reduce the needed parameters and thus simplify the training.
 \section{Conclusion}
+The main obstacle for us was the computational power needed to do various simulations.
+Neural networks and additionally Reinforcement Learning has a lot of parameters that need to be defined.
+Evaluating those parameters takes a lot of time as the training often takes multiple hours until one can see the results.
+
+A problem we underestimated was the problem arising from the field size.
+On the hand it allowed for easy simplification of the problem by reducing the size, on the other hand the field is small posing a challenge for the convolution layers.
+
+Apart from the problems, we showed that it is possible to learn Minesweeper with neural networks in combination with Reinforcement learning.
+We are able to win on a $5 \times 5$ field with $5$ mines about half of the games.
+On a $4 \times 4$ field with $4$ mines about $50\%$ of the games.
+It is a foundation to continue evaluating the use of neural networks for reinforcement learning in setups with a small input space and compared to for example Atari games a large action space.
 
 \section{Future Work}
+It would be interesting and challenging to scale and train the network to be able to play at least on a `Beginner' sized Minesweeper field.
+
+More important is the challenge of the different field sizes.
+Neural networks are learned on a fixed input dimension, meaning that the network would need to be retrained and probably resized for each different field size.
+With more time, we would have tried a sliding window approach, but that requires handcrafted features or a overall setup moving the window and reducing the playing part to a type of supervised learning, which was not the goal of this project.
